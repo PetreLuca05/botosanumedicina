@@ -97,28 +97,31 @@ div{
   align-items: center;
   color: white;
   z-index: 1000;
-  padding: 0 20px;
+  padding: 0 10px;
 }
 
-.navbar p{
+.back-button{
   background-color: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0);
   color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
+  width: 35px;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
   font-weight: bold;
   font-size: 14px;
   transition: all 0.3s ease;
-  color: white;
-  font-weight: bold;
-  text-transform: capitalize;
   cursor: pointer;
+  margin-left: 5px;
 }
 
-.navbar p:hover {
+.back-button:hover {
   background-color: white;
-  color: blue;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  color: rgb(0, 0, 0);
 }
 
 .language-toggle {
@@ -133,6 +136,7 @@ div{
   font-weight: bold;
   font-size: 14px;
   transition: all 0.3s ease;
+  margin-right: 15px;
 }
 
 .language-toggle:hover {

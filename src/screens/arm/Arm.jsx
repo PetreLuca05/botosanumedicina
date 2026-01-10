@@ -6,7 +6,7 @@ import { Canvas } from "@react-three/fiber"
 function Arm() {
   return (
     <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
-      <ScrollControls pages={2} damping={0.25}>
+      <ScrollControls pages={3} damping={0.25}>
         <Arm_Scene />
         <Arm_Overlay />
       </ScrollControls>

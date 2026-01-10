@@ -22,7 +22,10 @@ function Navbar() {
   return (
     <section className="navbar">
       {window.location.pathname !== '/botosanumedicina' && (
-        <p onClick={() => window.location.href = '/botosanumedicina'}>back</p>
+        // <p onClick={() => window.location.href = '/botosanumedicina'}>back</p>
+        <article className="back-button" onClick={() => window.location.href = '/botosanumedicina'}>
+          <i className="fa-solid fa-angle-left"></i>
+        </article>
       )}
 
       <button onClick={toggleLanguage} className="language-toggle">

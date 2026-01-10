@@ -1,21 +1,44 @@
 import { Scroll } from '@react-three/drei'
+import { useState, useEffect } from 'react'
+import { armText } from './Arm_Text'
 import './Arm.css'
 
 function Arm_Overlay() {
+  const [language, setLanguage] = useState('EN')
+  
+  useEffect(() => {
+    const handleLanguageChange = (event) => {
+      setLanguage(event.detail)
+    }
+    
+    // Set initial language
+    setLanguage(window.currentLanguage || 'EN')
+    
+    // Listen for language changes
+    window.addEventListener('languageChanged', handleLanguageChange)
+    
+    return () => {
+      window.removeEventListener('languageChanged', handleLanguageChange)
+    }
+  }, [])
+
+  const text = armText[language]
+
   return (
     <Scroll html style={{ width: '100%' }}>
       <section className="arm-section">
-        <h1>Human Arm Anatomy</h1>
-        <p>Explore the complex structure of the human arm</p>
+        <h1>{text.title}</h1>
+        <p>{text.subtitle}</p>
       </section>
       
       <section className="arm-section">
-        <h2>Arm Structure</h2>
-        <p>
-          The human arm is a complex structure composed of bones, muscles, nerves, and blood vessels 
-          that work together to provide strength, flexibility, and dexterity. It consists of three main 
-          sections: the upper arm (humerus), forearm (radius and ulna), and hand.
-        </p>
+        <h2>{text.structureTitle}</h2>
+        <p>{text.structureDescription}</p>
+      </section>
+
+      <section className="arm-section">
+        <h2>{text.functionTitle}</h2>
+        <p>{text.functionDescription}</p>
       </section>
     </Scroll>
   )
