@@ -1,7 +1,7 @@
 import { Scroll } from '@react-three/drei'
 import '../App.css'
 import { useState, useEffect } from 'react'
-import { organs } from "../organs_list";
+import { bodyParts } from "../body_parts_list";
 
 function Overlay() {
   return (
@@ -84,7 +84,7 @@ function OverlayOrganInformation() {
     }
   }, [selectedIndex])
   
-  const organ = selectedIndex >= 0 ? organs[language][selectedIndex] : null
+  const organ = selectedIndex >= 0 ? bodyParts[language][selectedIndex] : null
   
   const handleCloseClick = () => {
     if (window.setOrganSelectedIndex) {
@@ -93,6 +93,13 @@ function OverlayOrganInformation() {
     // Resume rotation and reset camera
     if (window.setIsPaused) {
       window.setIsPaused(false)
+    }
+  }
+
+  const handleLearnMoreClick = () => {
+    // Navigate to organ link
+    if (organ && organ.link) {
+      window.location.href = `/botosanumedicina${organ.link}`
     }
   }
   
@@ -104,7 +111,7 @@ function OverlayOrganInformation() {
           <h2>{organ?.name || (language === 'EN' ? 'Select an organ' : 'Selectează un organ')}</h2>
           <p>{organ?.description || (language === 'EN' ? 'Click on an organ to learn more about it' : 'Fă clic pe un organ pentru a afla mai multe despre el')}</p>
         </div>
-        <button>{language === 'EN' ? 'Learn More' : 'Află Mai Multe'}</button>
+        <button onClick={handleLearnMoreClick}>{language === 'EN' ? 'Learn More' : 'Află Mai Multe'}</button>
       </article>
     </section>
   )

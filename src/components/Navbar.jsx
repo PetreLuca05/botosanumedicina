@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Scroll } from '@react-three/drei'
 import '../App.css'
 
 function Navbar() {

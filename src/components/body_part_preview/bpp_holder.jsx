@@ -1,18 +1,18 @@
 
 import { useState, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { organs } from "../../organs_list";
+import Arm from "./bpp_arm.jsx";
 
-function Organ({index}) {
+function BPP({index, bodyPart}) {
   const currentLanguage = window.currentLanguage || 'EN';
-  const currentOrgan = organs[currentLanguage][index] || organs['EN'][0];
+  const currentBodyPart = bodyPart || {};
   const [isHovered, setIsHovered] = useState(false);
   const meshRef = useRef();
   const targetScale = useRef(1);
   const currentScale = useRef(1);
 
   const handleClick = () => {
-    console.log(currentOrgan.name + ' clicked' + index);
+    console.log(currentBodyPart.name + ' clicked' + index);
     if (window.setOrganSelectedIndex) {
       window.setOrganSelectedIndex(index);
     }
@@ -42,17 +42,35 @@ function Organ({index}) {
   });
 
   return (
-    <mesh 
-      ref={meshRef}
-      position={[0, 0, 0]} 
-      onClick={handleClick}
-      onPointerEnter={handlePointerEnter}
-      onPointerLeave={handlePointerLeave}
-    >
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={currentOrgan.color} />
-    </mesh>
+    <>
+      {index != 1 && (
+        <mesh 
+          ref={meshRef}
+          position={[0, 0, 0]} 
+          onClick={handleClick}
+          onPointerEnter={handlePointerEnter}
+          onPointerLeave={handlePointerLeave}
+        >
+          <sphereGeometry args={[1, 32, 32]} />
+          <meshStandardMaterial color={currentBodyPart.color || 'red'} transparent opacity={0.5} />
+        </mesh>
+      )}
+      
+      {index === 1 && (
+        <mesh 
+          ref={meshRef}
+          position={[0, 0, 0]} 
+          onClick={handleClick}
+          onPointerEnter={handlePointerEnter}
+          onPointerLeave={handlePointerLeave}
+        >
+          <sphereGeometry args={[1, 32, 32]} />
+          <Arm position={[-1, .6, 0]} rotation={[10, 0, .75]} scale={[2.5, 2.5, 2.5]} />
+          <meshStandardMaterial color={currentBodyPart.color || 'red'} transparent opacity={0.5} />
+        </mesh>
+      )}
+    </>
   )
 }
 
-export default Organ
+export default BPP

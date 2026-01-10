@@ -1,9 +1,9 @@
 import { ScrollControls, useScroll } from "@react-three/drei"
 import React from "react"
-import RoboticArm from "./RoboticArm"
 import { useFrame, useThree } from "@react-three/fiber"
 import Overlay from "./Overlay.jsx"
-import Organ from "./organs/Organ.jsx"
+import BPP from "./body_part_preview/bpp_holder.jsx"
+import { bodyParts } from "../body_parts_list";
 
 function CameraController() {
   const { camera } = useThree()
@@ -44,15 +44,18 @@ function CameraController() {
   return null
 }
 
-function RotatingHearts() {
+function Rotating_Body_Parts({ bodyParts = [] }) {
   const groupRef = React.useRef()
   const heartRefs = React.useRef([])
   const randomOffsets = React.useRef([])
   const [isPaused, setIsPaused] = React.useState(false)
+  const [organSelectedIndex, setOrganSelectedIndex] = React.useState(-1)
   window.isPaused = isPaused;
   window.setIsPaused = setIsPaused;
+  window.setOrganSelectedIndex = setOrganSelectedIndex;
+  window.organSelectedIndex = organSelectedIndex;
   const radius = 4
-  const organCount = 6
+  const organCount = bodyParts.length
   
   // Generate random rotation offsets once
   React.useEffect(() => {
@@ -129,7 +132,7 @@ function RotatingHearts() {
   
   return (
     <group ref={groupRef} rotation={[Math.PI / 1.5, 0, 0]}>
-      {Array.from({ length: organCount }, (_, i) => {
+      {bodyParts.map((bodyPart, i) => {
         const angle = (i / organCount) * Math.PI * 2
         const x = Math.cos(angle) * radius
         const z = Math.sin(angle) * radius
@@ -141,7 +144,7 @@ function RotatingHearts() {
             onClick={() => handleOrganClick(i)}
           >
             <group ref={(el) => heartRefs.current[i] = el}>
-              <Organ index={i}/>
+              <BPP index={i} bodyPart={bodyPart}/>
             </group>
           </group>
         )
@@ -152,6 +155,7 @@ function RotatingHearts() {
 
 function Experience() {
   const { camera } = useThree()
+  const currentLanguage = window.currentLanguage || 'EN'
   
   React.useEffect(() => {
     camera.fov = 60
@@ -166,9 +170,7 @@ function Experience() {
         <Overlay />
         <CameraController />
 
-        {/* <RoboticArm/> */}
-
-        <RotatingHearts />
+        <Rotating_Body_Parts bodyParts={bodyParts[currentLanguage] || bodyParts['EN']} />
       </ScrollControls>
       
       <ambientLight intensity={0.5} />
