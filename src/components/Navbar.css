@@ -11,11 +11,11 @@
   color: white;
   z-index: 1000;
   padding: 0 10px;
+  border: 0px;
 }
 
 .back-button{
   background-color: transparent;
-  border: 2px solid rgba(255, 255, 255, 0);
   color: white;
   width: 35px;
   aspect-ratio: 1/1;
@@ -23,12 +23,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  padding: 8px 16px;
   cursor: pointer;
   font-weight: bold;
   font-size: 14px;
   transition: all 0.3s ease;
-  cursor: pointer;
-  margin-left: 5px;
+  margin-right: 15px;
+  backdrop-filter: blur(10px);
 }
 
 .back-button:hover {
@@ -39,7 +42,7 @@
 
 .language-toggle {
   margin-left: auto;
-
+  backdrop-filter: blur(10px);
   background-color: transparent;
   border: 2px solid rgba(255, 255, 255, 0.25);
   color: white;

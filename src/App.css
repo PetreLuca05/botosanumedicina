@@ -4,8 +4,6 @@
 
 /* Firefox */
 html {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
 }
 
 .hero {
@@ -140,13 +138,6 @@ html {
   overflow-y: hidden;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
-}
-
-/* WebKit browsers (Chrome, Safari, Edge) */
-.slides::-webkit-scrollbar {
-  display: none;
 }
 
 .slides > * {

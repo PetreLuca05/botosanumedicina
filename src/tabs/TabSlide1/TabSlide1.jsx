@@ -2,20 +2,22 @@
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { Box, OrbitControls, ScrollControls, Scroll, useScroll } from '@react-three/drei'
 import './TabSlide1.css'
-import { useRef } from 'react'
 
 function Home() {
   return (
     <>
       <Canvas style={{ height: '100vh' }}>
-        <ScrollControls pages={5} damping={0.1}>
+        <ScrollControls pages={8} damping={0.1}>
           <Scene />
-          <Scroll html>
+          <Scroll html style={{ width: '100%' }}>
             <Hero />
             <CeEsteUnFluid />
             <Necesara />
             <CePune />
             <Presiune />
+            <Tipuri />
+            <Fizica />
+            <Probleme />
           </Scroll>
         </ScrollControls>
       </Canvas>
@@ -37,7 +39,7 @@ function Scene() {
           <meshStandardMaterial color="hotpink" />
         </Box>
       </group>
-      <gridHelper args={[10, 10]} />
+      <gridHelper args={[25, 25]} />
       <OrbitControls enablePan={false} enableZoom={false} enableRotate={true} />
     </>
   );
@@ -64,16 +66,16 @@ function CameraRig() {
 
 function Hero() {
   return (
-    <section className="s1hero">
+    <figure className="s1hero">
       <h1>curgerea fluideor în corpul uman</h1>
       <p>Fluidele din corpul nostru, cum ar fi sângele și limfa, sunt esențiale pentru transportul substanțelor vitale și menținerea sănătății.</p>
-    </section>
+    </figure>
   )
 }
 
 function CeEsteUnFluid() {
   return (
-    <section className="ceesteunfluid">
+    <figure className="ceesteunfluid">
       <h2>1️⃣ Ce este un fluid?</h2>
       <p>Un fluid este o substanță care curge și ia forma vasului în care se află.</p>
       <h3>În corp avem două fluide principale:</h3>
@@ -82,13 +84,13 @@ function CeEsteUnFluid() {
         <li>Limfa 💧</li>
       </ul>
       👉 Animație cu lichid care curge prin tuburi; utilizatorul poate schimba viteza.
-    </section>
+    </figure>
   )
 }
 
 function Necesara(){
   return (
-    <section className="necesara">
+    <figure className="necesara">
       <header>
         <h2>2️⃣ De ce este necesară curgerea fluidelor?</h2>
         <p>Un fluid este o substanță care curge și ia forma vasului în care se află.</p>
@@ -112,13 +114,13 @@ function Necesara(){
         </ul>
         </article>
       👉 Click pe o organ → vezi ce aduce sângele acolo.
-    </section>
+    </figure>
   )
 }
 
 function CePune(){
   return (
-    <section className="cepune">
+    <figure className="cepune">
       <header>
         <h2>3️⃣ Ce pune fluidele în mișcare?</h2>
         <p>Fluidele din corpul nostru nu se mișcă de la sine - au nevoie de forțe care să le pună în circulație.</p>
@@ -142,13 +144,13 @@ function CePune(){
         </article>
       👉 Apasă pe inimă → vezi pulsul și debitul.
       👉 Activează mușchii → vezi limfa cum începe să circule.
-    </section>
+    </figure>
   )
 }
 
 function Presiune() {
   return (
-    <section className="presiune">
+    <figure className="presiune">
       <h2>4️⃣ Presiunea și viteza de curgere</h2>
       <p>Fluidul curge din zona cu presiune mare spre presiune mică.</p>
       <h3>Viteza depinde de:</h3>
@@ -158,7 +160,73 @@ function Presiune() {
         <li>vâscozitate</li>
       </ul>
       👉 Slider pentru diametrul vasului → vezi viteza modificată.
-    </section>
+    </figure>
+  )
+}
+
+function Tipuri() {
+  return (
+    <figure className="tipuri">
+      <h2>5️⃣ Tipuri de vase și rolul lor</h2>
+      {/* <p>Fluidul curge din zona cu presiune mare spre presiune mică.</p> */}
+
+      <article>
+        <ul>
+          <h3>🟥 Artere:</h3>
+          <li>duc sângele de la inimă</li>
+          <li>presiune mare</li>
+        </ul>
+
+        <ul>
+          <h3>🟦 Vene:</h3>
+          <li>aduc sângele înapoi</li>
+          <li>valve</li>
+        </ul>
+
+        <ul>
+          <h3>🟨 Capilare:</h3>
+          <li>schimbul de oxigen și nutrienți</li>
+        </ul>
+      </article>
+
+      👉 Click pe fiecare vas → apare explicația + animație.
+    </figure>
+  )
+}
+
+function Fizica() {
+  return (
+    <figure className="fizica">
+      <h2>6️⃣ Legile fizicii aplicate</h2>
+      <p>Fluidul curge din zona cu presiune mare spre presiune mică.</p>
+
+      <h3>Legea lui Poiseuille:</h3>
+      <ul>
+        <li>diametrul vasului</li>
+        <li>presiune</li>
+        <li>vâscozitate</li>
+      </ul>
+
+      👉 Îngustezi un vas → vezi cum scade debitul.
+    </figure>
+  )
+}
+
+function Probleme() {
+  return (
+    <figure className="probleme">
+      <h2>7️⃣ Probleme când curgerea este afectată</h2>
+      <p>Când curgerea fluidelor este întreruptă sau îngreunată, pot apărea diverse probleme de sănătate care afectează funcționarea organismului.</p>
+
+      <ul>
+        <li>🩸 Hipertensiune</li>
+        <li>🫀 Tromboză</li>
+        <li>💧 Edem (limfa nu circulă)</li>
+        <li>Varice</li>
+      </ul>
+
+      👉 Click pe fiecare vas → apare explicația + animație.
+    </figure>
   )
 }
 
