@@ -1,18 +1,16 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.jsx'
-import { createBrowserRouter, RouterProvider} from 'react-router-dom'
 
+import { createBrowserRouter, RouterProvider} from 'react-router-dom'
 import Navbar from './components/Navbar.jsx'
 
-import Arm from './screens/arm/Arm.jsx'
+import Home from './App.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
 
 const router = createBrowserRouter([
-  { path: '/botosanumedicina', element: <App /> },
+  { path: '/botosanumedicina', element: <Home /> },
   { path: '*', element: <NotFoundPage /> },
-  { path: '/botosanumedicina/arm', element: <Arm /> },
 ])
 
 createRoot(document.getElementById('root')).render(

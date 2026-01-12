@@ -1,26 +1,5 @@
-/* Global Styles */
 * {
   box-sizing: border-box;
-}
-
-/* Minimalistic Scrollbar Styling */
-/* Webkit browsers (Chrome, Safari, Edge) */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 3px;
-  transition: all 0.2s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
 }
 
 /* Firefox */
@@ -31,16 +10,12 @@ html {
 
 .hero {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.75) 0%, rgba(118, 75, 162, 0.75) 100%);
-}
-
-div{
-  min-height: 100vh;
 }
 
 .hero h1{
@@ -87,129 +62,97 @@ div{
   }
 }
 
-.navbar {
-  position: fixed;
-  top: 0;
+.carousel {
   width: 100%;
-  height: 60px;
-  background-color: rgba(0, 0, 0, 0);
-  display: flex;
-  align-items: center;
-  color: white;
-  z-index: 1000;
-  padding: 0 10px;
-}
-
-.back-button{
-  background-color: transparent;
-  border: 2px solid rgba(255, 255, 255, 0);
-  color: white;
-  width: 35px;
-  aspect-ratio: 1/1;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  margin-left: 5px;
-}
-
-.back-button:hover {
-  background-color: white;
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  color: rgb(0, 0, 0);
-}
-
-.language-toggle {
-  margin-left: auto;
-
-  background-color: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  margin-right: 15px;
-}
-
-.language-toggle:hover {
-  background-color: white;
-  color: blue;
-}
-
-.organ-info-panel {
-  background-color: rgba(255, 0, 0, 0);
+  height: 100vh;
+  overflow-x: auto;
+  overflow-y: hidden;
   min-height: 100vh;
-  padding: 200px 50px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  transition: all 0.5s ease;
+  background-color: #1a1a1a;
+  position: relative;
+  scroll-behavior: smooth;
 }
 
-.organ-info-panel article{
-  background-color: rgba(255, 255, 255, 0.25);
-  max-width: 30rem;
-  border-radius: 15px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.organ-info-panel button{
-  margin-top: 10px;
-  padding: 15px 20px;
-  border-radius: 5px;
-  border-top-left-radius: 0px;
-  border-top-right-radius: 0px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  background-size: 200% 200%;
-  color: rgb(255, 255, 255);
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-position 0.3s ease;
-  font-size: 1rem;
+.carousel-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
+  padding: 10px 20px;
+  pointer-events: none;
+  z-index: 10;
 }
 
-.organ-info-panel button:hover{
-  background-position: 100% 100%;
+.carousel-overlay > * {
+  pointer-events: auto;
 }
 
-.organ-info-panel h2{
+#arrowRight{
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  font-size: 1rem;
   color: white;
-  font-size: 2rem;
-}
-
-.organ-info-panel p{
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 0.9rem;
-  line-height: 1.4;
-  min-height: 200px;
-}
-
-#close-button{
-  background-color: rgba(255, 255, 255, 0.25);
-  width: 40px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 50px;
   aspect-ratio: 1/1;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 0.3s ease;
-  color: white;
   cursor: pointer;
-  position: absolute;
-  right: 0;
-  border-bottom-left-radius: 15px;
+  z-index: 10;
+  transition: all 0.3s ease;
 }
 
-#close-button:hover {
-  background-color: rgb(255, 74, 28);
-  color: rgb(255, 255, 255);
+#arrowLeft{
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 50px;
+  aspect-ratio: 1/1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+#arrowRight:hover, #arrowLeft:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+  color: black;
+}
+
+.slides {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+/* WebKit browsers (Chrome, Safari, Edge) */
+.slides::-webkit-scrollbar {
+  display: none;
+}
+
+.slides > * {
+  flex: 0 0 100vw;
+  width: 100vw;
+  height: 100vh;
+  min-width: 100vw;
+  scroll-snap-align: start;
 }
