@@ -2,10 +2,10 @@ import { Scroll } from '@react-three/drei'
 import './App.css'
 import { useState, useEffect, useRef } from 'react'
 import React from 'react'
-import Slide1 from './screens/Slide1/Slide1.jsx'
-import Slide2 from './screens/Slide2/Slide2.jsx'
-import Slide3 from './screens/Slide3/Slide3.jsx'
-import Slide4 from './screens/Slide4/Slide4.jsx'
+import Slide1 from './slides/slide1/Slide1.jsx'
+import Slide2 from './slides/slide2/Slide2.jsx'
+import Slide3 from './slides/slide3/Slide3.jsx'
+import Slide4 from './slides/slide4/Slide4.jsx'
 
 function Home() {
   return (
