@@ -4,12 +4,11 @@ import { Box, OrbitControls, ScrollControls, Scroll, useScroll } from '@react-th
 import { EffectComposer, Bloom, ChromaticAberration, Vignette } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
 import './TabSlide1.css'
-import Model from './Sangelesilimfa.jsx'
+import MODEL_Sange from '../../m_sange'
 
 function Home() {
   return (
-    <>
-      <Canvas 
+    <Canvas 
         style={{ height: '100vh' }} 
         camera={{ position: [0, 2, 5], fov: 40 }}
       >
@@ -27,7 +26,6 @@ function Home() {
           </Scroll>
         </ScrollControls>
       </Canvas>
-    </>
   )
 }
 
@@ -94,7 +92,7 @@ function Scene() {
       <Lighting />
 
       <group rotation={[0, -45, 0]} position={[0, 0, 0]}>
-        <Model position={[0, 0, 0]} rotation={[0, Math.PI / 2, 0]} scale={.9} />
+        <MODEL_Sange position={[0, 0, 0]} rotation={[0, Math.PI / 2, 0]} scale={.9}/>
       </group>
 
       <gridHelper args={[25, 25]} material-transparent={true} material-opacity={0.2} />

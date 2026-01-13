@@ -5,6 +5,7 @@ import { Box, OrbitControls, Text } from '@react-three/drei'
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { useNavigate } from 'react-router-dom';
+import MODEL_Sange from '../../m_sange'
 
 function CameraController({ 
   minAngle = -Math.PI/3, // -60 degrees - you can adjust this
@@ -82,12 +83,7 @@ function Scene() {
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 10, 10]} />
       <group rotation={[0, 90, 0]}>
-        <Box position={[-1.2, 0, 0]} rotation={[0.1, 0.1, 0]}>
-          <meshStandardMaterial color="orange" />
-        </Box>
-        <Box position={[1.2, 0, 0]} rotation={[0.1, 0.1, 0]}>
-          <meshStandardMaterial color="hotpink" />
-        </Box>
+        <MODEL_Sange position={[0, 0, 0]} rotation={[0, Math.PI / 2, 0]} scale={.9}/>
       </group>
       <gridHelper args={[10, 10]} />
       <OrbitControls enablePan={false} enableZoom={false} enableRotate={true} />

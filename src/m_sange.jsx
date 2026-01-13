@@ -7,7 +7,7 @@ function SolidColorMaterial(color) {
   return new THREE.MeshBasicMaterial({ color: color, side: THREE.FrontSide })
 } 
 
-export function Model(props) {
+export function MODEL_Sange(props) {
   const { animationSpeed = .1 } = props
   const { nodes, materials, animations } = useGLTF('./models/sangelesilimfa.glb')
   const group = React.useRef()
@@ -34,7 +34,7 @@ export function Model(props) {
     }
   }, [actions, animationSpeed])
   
-    return (
+  return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
         <group name="Top_Vein">
@@ -320,4 +320,4 @@ export function Model(props) {
 
 useGLTF.preload('./models/sangelesilimfa.glb')
 
-export default Model
+export default MODEL_Sange
