@@ -5,57 +5,160 @@ import { EffectComposer, Bloom, ChromaticAberration, Vignette } from '@react-thr
 import { BlendFunction } from 'postprocessing'
 import './Fluide.css'
 import MODEL_Sange from '../../components/m_sange'
+import { useState, useRef } from 'react';
 
 function Home() {
+  const [animationsSpeed, setAnimationsSpeed] = useState(1);
+  const [debugMode, setDebugMode] = useState(false);
+  const [debugCamera, setDebugCamera] = useState({
+    position: [0, 2, 8],
+    lookAt: [0, 0, 0],
+    fov: 40
+  });
+  const [currentSection, setCurrentSection] = useState(0);
+
   return (
-    <Canvas 
-        style={{ height: '100vh' }} 
-        camera={{ position: [0, 2, 5], fov: 40 }}
-      >
-        <ScrollControls pages={8} damping={0.1}>
-          <Scene />
-          <Scroll html style={{ width: '100%' }}>
-            <Hero />
-            <CeEsteUnFluid />
-            <Necesara />
-            <CePune />
-            <Presiune />
-            <Tipuri />
-            <Fizica />
-            <Probleme />
-          </Scroll>
-        </ScrollControls>
-      </Canvas>
+    <>
+      <Canvas 
+          style={{ height: '100vh' }} 
+          camera={{ position: [0, 2, 5], fov: 40 }}
+        >
+          <ScrollControls pages={6} damping={0.1}>
+            <Scene 
+              animationsSpeed={animationsSpeed} 
+              debugMode={debugMode}
+              debugCamera={debugCamera}
+              setCurrentSection={setCurrentSection}
+            />
+            <Scroll html style={{ width: '100%' }}>
+              <Hero />
+              <CeEsteUnFluid />
+              <Necesara animationsSpeed={animationsSpeed} setAnimationsSpeed={setAnimationsSpeed}/>
+              <CePune />
+              <Presiune />
+              <Probleme />
+            </Scroll>
+          </ScrollControls>
+        </Canvas>
+        
+        {/* Camera Debug Panel - Outside Canvas */}
+        <CameraDebugPanel 
+          debugMode={debugMode}
+          setDebugMode={setDebugMode}
+          debugCamera={debugCamera}
+          setDebugCamera={setDebugCamera}
+          currentSection={currentSection}
+        />
+    </>
   )
 }
 
-function CameraRig() {
+function CameraRig({ debugMode, debugCamera, setCurrentSection }) {
   const { camera } = useThree()
   const scroll = useScroll()
   
+  // Define camera positions for each section
+  const cameraPositions = [
+    // Hero - Front view
+    { position: [0, 2, 8], lookAt: [0, 0, 0], fov: 40 },
+    // CeEsteUnFluid - Close up right side
+    { position: [-2, 0.9, 4.8], lookAt: [0, .3, -0.9], fov: 45 },
+    // Necesara - Top down view
+    { position: [-10.2, 8.0, -0.1], lookAt: [0.0, 0, 0.0], fov: 15 },
+    // CePune - Left side angle
+    { position: [-7.8, -0.3, -1.2], lookAt: [-1.8, 0.3, 1.2], fov: 46 },
+    // Presiune - Bottom view looking up
+    { position: [0.0, 0.0, -3.6], lookAt: [0.0, 0.0, 0.0], fov: 80 },
+    // Probleme - Wide overview
+    { position: [0, 6, 12], lookAt: [0, 0, 0], fov: 50 }
+  ]
+  
   useFrame(() => {
-    const offset = scroll.offset // 0 to 1 based on scroll position
+    // If in debug mode, use debug camera values
+    if (debugMode) {
+      camera.position.set(...debugCamera.position)
+      camera.fov = debugCamera.fov
+      camera.updateProjectionMatrix()
+      camera.lookAt(...debugCamera.lookAt)
+      return
+    }
     
-    // Animate camera position based on scroll
-    camera.position.x = Math.sin(offset * Math.PI * 2) * 5
-    camera.position.y = 2 + offset * 3 // Move camera up as we scroll
-    camera.position.z = Math.cos(offset * Math.PI * 2) * 5
-
-    camera.fov = 40
-    camera.updateProjectionMatrix()
+    // Guard clause: ensure scroll is available and has offset property
+    if (!scroll || typeof scroll.offset !== 'number' || !camera) {
+      return
+    }
     
-    // Always look at the center
-    camera.lookAt(0, 0, 0)
+    try {
+      const offset = Math.max(0, Math.min(1, scroll.offset)) // Clamp offset between 0 and 1
+      
+      // Calculate which section we're in and interpolation factor
+      const sectionCount = cameraPositions.length
+      const sectionProgress = offset * (sectionCount - 1)
+      const currentSection = Math.floor(sectionProgress)
+      const nextSection = Math.min(currentSection + 1, sectionCount - 1)
+      const lerpFactor = Math.max(0, Math.min(1, sectionProgress - currentSection)) // Clamp lerp factor
+      
+      // Update current section for debug panel
+      setCurrentSection(currentSection)
+      
+      // Ensure we have valid indices
+      if (currentSection < 0 || currentSection >= sectionCount || 
+          nextSection < 0 || nextSection >= sectionCount) {
+        return
+      }
+      
+      // Get current and next camera configurations
+      const current = cameraPositions[currentSection]
+      const next = cameraPositions[nextSection]
+      
+      // Validate camera position data
+      if (!current || !next || !current.position || !next.position || 
+          !current.lookAt || !next.lookAt) {
+        return
+      }
+      
+      // Smooth interpolation function
+      const smoothstep = (t) => t * t * (3 - 2 * t)
+      const smoothLerpFactor = smoothstep(lerpFactor)
+      
+      // Lerp between positions with bounds checking
+      const lerpedPosition = [
+        current.position[0] + (next.position[0] - current.position[0]) * smoothLerpFactor,
+        current.position[1] + (next.position[1] - current.position[1]) * smoothLerpFactor,
+        current.position[2] + (next.position[2] - current.position[2]) * smoothLerpFactor
+      ]
+      
+      const lerpedLookAt = [
+        current.lookAt[0] + (next.lookAt[0] - current.lookAt[0]) * smoothLerpFactor,
+        current.lookAt[1] + (next.lookAt[1] - current.lookAt[1]) * smoothLerpFactor,
+        current.lookAt[2] + (next.lookAt[2] - current.lookAt[2]) * smoothLerpFactor
+      ]
+      
+      const lerpedFov = current.fov + (next.fov - current.fov) * smoothLerpFactor
+      
+      // Validate calculated values before applying
+      if (lerpedPosition.some(val => !isFinite(val)) || 
+          lerpedLookAt.some(val => !isFinite(val)) || 
+          !isFinite(lerpedFov)) {
+        return
+      }
+      
+      // Apply to camera
+      camera.position.set(...lerpedPosition)
+      camera.fov = Math.max(10, Math.min(120, lerpedFov)) // Clamp FOV to reasonable range
+      camera.updateProjectionMatrix()
+      camera.lookAt(...lerpedLookAt)
+    } catch (error) {
+      // Silently handle any errors to prevent crashes during scrolling
+      console.warn('CameraRig update error:', error)
+    }
   })
   
   return null
 }
 
-
 function PostProcessing({enabled = true}) {
-
   if(!enabled) return null;
-
   return (
     <EffectComposer>
       <Bloom 
@@ -83,16 +186,19 @@ function Lighting() {
   )
 }
 
-
-function Scene() {
+function Scene({ animationsSpeed, debugMode, debugCamera, setCurrentSection }) {
   return (
     <>
-      <CameraRig />
+      <CameraRig 
+        debugMode={debugMode}
+        debugCamera={debugCamera}
+        setCurrentSection={setCurrentSection}
+      />
       <PostProcessing enabled={false} />
       <Lighting />
 
-      <group rotation={[0, -45, 0]} position={[0, 0, 0]}>
-        <MODEL_Sange position={[0, 0, 0]} rotation={[0, Math.PI / 2, 0]} scale={.9}/>
+      <group rotation={[0, -45, 0]} position={[0, -.1, 0]}>
+        <MODEL_Sange position={[0, 0, 0]} rotation={[0, Math.PI / 2, 0]} scale={.9} animationSpeed={animationsSpeed} />
       </group>
 
       <gridHelper args={[25, 25]} material-transparent={true} material-opacity={0.2} />
@@ -118,24 +224,52 @@ function CeEsteUnFluid() {
   return (
     <figure className="ceesteunfluid">
       <h2>1️⃣ Ce este un fluid?</h2>
-      <p>Un fluid este o substanță care curge și ia forma vasului în care se află.</p>
-      <h3>În corp avem două fluide principale:</h3>
-      <ul>
-        <li>Sângele 🩸</li>
-        <li>Limfa 💧</li>
-      </ul>
-      👉 Animație cu lichid care curge prin tuburi; utilizatorul poate schimba viteza.
+      <p>Un fluid este o substanță care curge și ia forma 
+        vasului în care se află.</p>
+      {/* <h3>În corp avem două fluide principale:</h3>
+      <article>
+        <button>Sângele 🟥</button>
+        <button>Limfa 🟩</button>
+      </article> */}
+      {/* <div style={{ margin: '20px 0' }}>
+        <label htmlFor="flow-speed">Viteza curgerii: </label>
+        <input 
+          type="range" 
+          id="flow-speed" 
+          min="0.1" 
+          max="2" 
+          step="0.1" 
+          defaultValue="1"
+          style={{ margin: '0 10px' }}
+          onChange={(e) => setAnimationsSpeed(parseFloat(e.target.value))}
+        />
+        <span>{animationsSpeed}x</span>
+      </div> */}
     </figure>
   )
 }
 
-function Necesara(){
+function Necesara({ animationsSpeed, setAnimationsSpeed }){
   return (
     <figure className="necesara">
       <header>
         <h2>2️⃣ De ce este necesară curgerea fluidelor?</h2>
         <p>Un fluid este o substanță care curge și ia forma vasului în care se află.</p>
       </header>
+
+      <div>
+        <h3 htmlFor="flow-speed">viteza fluideor</h3>
+        <input 
+          type="range" 
+          id="flow-speed" 
+          min="0.1" 
+          max="2" 
+          step="0.1" 
+          defaultValue="1"
+          onChange={(e) => setAnimationsSpeed(parseFloat(e.target.value))}
+        />
+        {/* <span>{animationsSpeed}x</span> */}
+      </div>
 
       <article>
         <ul>
@@ -154,7 +288,7 @@ function Necesara(){
           <li>Transportă grăsimi</li>
         </ul>
         </article>
-      👉 Click pe o organ → vezi ce aduce sângele acolo.
+      {/* 👉 Click pe o organ → vezi ce aduce sângele acolo. */}
     </figure>
   )
 }
@@ -205,69 +339,214 @@ function Presiune() {
   )
 }
 
-function Tipuri() {
-  return (
-    <figure className="tipuri">
-      <h2>5️⃣ Tipuri de vase și rolul lor</h2>
-      {/* <p>Fluidul curge din zona cu presiune mare spre presiune mică.</p> */}
-
-      <article>
-        <ul>
-          <h3>🟥 Artere:</h3>
-          <li>duc sângele de la inimă</li>
-          <li>presiune mare</li>
-        </ul>
-
-        <ul>
-          <h3>🟦 Vene:</h3>
-          <li>aduc sângele înapoi</li>
-          <li>valve</li>
-        </ul>
-
-        <ul>
-          <h3>🟨 Capilare:</h3>
-          <li>schimbul de oxigen și nutrienți</li>
-        </ul>
-      </article>
-
-      👉 Click pe fiecare vas → apare explicația + animație.
-    </figure>
-  )
-}
-
-function Fizica() {
-  return (
-    <figure className="fizica">
-      <h2>6️⃣ Legile fizicii aplicate</h2>
-      <p>Fluidul curge din zona cu presiune mare spre presiune mică.</p>
-
-      <h3>Legea lui Poiseuille:</h3>
-      <ul>
-        <li>diametrul vasului</li>
-        <li>presiune</li>
-        <li>vâscozitate</li>
-      </ul>
-
-      👉 Îngustezi un vas → vezi cum scade debitul.
-    </figure>
-  )
-}
-
 function Probleme() {
   return (
     <figure className="probleme">
-      <h2>7️⃣ Probleme când curgerea este afectată</h2>
+      <h2>5️⃣ Probleme când curgerea este afectată</h2>
       <p>Când curgerea fluidelor este întreruptă sau îngreunată, pot apărea diverse probleme de sănătate care afectează funcționarea organismului.</p>
 
       <ul>
-        <li>🩸 Hipertensiune</li>
-        <li>🫀 Tromboză</li>
-        <li>💧 Edem (limfa nu circulă)</li>
-        <li>Varice</li>
+      <li>🩸 Hipertensiune</li>
+      <li>🫀 Tromboză</li>
+      <li>💧 Edem (limfa nu circulă)</li>
+      <li>Varice</li>
       </ul>
 
       👉 Click pe fiecare vas → apare explicația + animație.
     </figure>
+    )
+}
+
+function CameraDebugPanel({ debugMode, setDebugMode, debugCamera, setDebugCamera, currentSection }) {
+  const sectionNames = [
+    'Hero', 'CeEsteUnFluid', 'Necesara', 'CePune', 
+    'Presiune', 'Tipuri', 'Fizica', 'Probleme'
+  ]
+
+  const handlePositionChange = (axis, value) => {
+    setDebugCamera(prev => ({
+      ...prev,
+      position: prev.position.map((val, idx) => 
+        axis === idx ? parseFloat(value) : val
+      )
+    }))
+  }
+
+  const handleLookAtChange = (axis, value) => {
+    setDebugCamera(prev => ({
+      ...prev,
+      lookAt: prev.lookAt.map((val, idx) => 
+        axis === idx ? parseFloat(value) : val
+      )
+    }))
+  }
+
+  const handleFovChange = (value) => {
+    setDebugCamera(prev => ({
+      ...prev,
+      fov: parseFloat(value)
+    }))
+  }
+
+  const copyToClipboard = () => {
+    const cameraConfig = `{ position: [${debugCamera.position.map(v => v.toFixed(1)).join(', ')}], lookAt: [${debugCamera.lookAt.map(v => v.toFixed(1)).join(', ')}], fov: ${debugCamera.fov} }`
+    navigator.clipboard.writeText(cameraConfig)
+    alert('Camera configuration copied to clipboard!')
+  }
+
+  if (!debugMode) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: '10px',
+        right: '10px',
+        zIndex: 1000,
+        background: 'rgba(0,0,0,0.7)',
+        color: 'white',
+        padding: '10px',
+        borderRadius: '5px',
+        fontSize: '14px'
+      }}>
+        <button 
+          onClick={() => setDebugMode(true)}
+          style={{
+            background: '#4CAF50',
+            color: 'white',
+            border: 'none',
+            padding: '8px 16px',
+            borderRadius: '4px',
+            cursor: 'pointer'
+          }}
+        >
+          🎥 Camera Debug
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: '10px',
+      right: '10px',
+      zIndex: 1000,
+      background: 'rgba(0,0,0,0.9)',
+      color: 'white',
+      padding: '20px',
+      borderRadius: '10px',
+      fontSize: '14px',
+      minWidth: '300px',
+      fontFamily: 'monospace'
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+        <h3 style={{ margin: 0 }}>🎥 Camera Debug</h3>
+        <button 
+          onClick={() => setDebugMode(false)}
+          style={{
+            background: '#f44336',
+            color: 'white',
+            border: 'none',
+            padding: '5px 10px',
+            borderRadius: '3px',
+            cursor: 'pointer'
+          }}
+        >
+          ✕
+        </button>
+      </div>
+
+      <div style={{ marginBottom: '15px' }}>
+        <strong>Current Section: </strong>
+        <span style={{ color: '#4CAF50' }}>{currentSection} - {sectionNames[currentSection]}</span>
+      </div>
+
+      <div style={{ marginBottom: '15px' }}>
+        <h4 style={{ margin: '10px 0 5px 0' }}>Position:</h4>
+        {['X', 'Y', 'Z'].map((axis, idx) => (
+          <div key={axis} style={{ marginBottom: '8px' }}>
+            <label style={{ display: 'inline-block', width: '20px' }}>{axis}:</label>
+            <input
+              type="range"
+              min="-20"
+              max="20"
+              step="0.1"
+              value={debugCamera.position[idx]}
+              onChange={(e) => handlePositionChange(idx, e.target.value)}
+              style={{ width: '150px', marginLeft: '10px', marginRight: '10px' }}
+            />
+            <input
+              type="number"
+              step="0.1"
+              value={debugCamera.position[idx].toFixed(1)}
+              onChange={(e) => handlePositionChange(idx, e.target.value)}
+              style={{ width: '60px', background: '#333', color: 'white', border: '1px solid #555' }}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginBottom: '15px' }}>
+        <h4 style={{ margin: '10px 0 5px 0' }}>Look At:</h4>
+        {['X', 'Y', 'Z'].map((axis, idx) => (
+          <div key={axis} style={{ marginBottom: '8px' }}>
+            <label style={{ display: 'inline-block', width: '20px' }}>{axis}:</label>
+            <input
+              type="range"
+              min="-10"
+              max="10"
+              step="0.1"
+              value={debugCamera.lookAt[idx]}
+              onChange={(e) => handleLookAtChange(idx, e.target.value)}
+              style={{ width: '150px', marginLeft: '10px', marginRight: '10px' }}
+            />
+            <input
+              type="number"
+              step="0.1"
+              value={debugCamera.lookAt[idx].toFixed(1)}
+              onChange={(e) => handleLookAtChange(idx, e.target.value)}
+              style={{ width: '60px', background: '#333', color: 'white', border: '1px solid #555' }}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginBottom: '15px' }}>
+        <h4 style={{ margin: '10px 0 5px 0' }}>FOV:</h4>
+        <input
+          type="range"
+          min="10"
+          max="120"
+          step="1"
+          value={debugCamera.fov}
+          onChange={(e) => handleFovChange(e.target.value)}
+          style={{ width: '150px', marginRight: '10px' }}
+        />
+        <input
+          type="number"
+          min="10"
+          max="120"
+          value={Math.round(debugCamera.fov)}
+          onChange={(e) => handleFovChange(e.target.value)}
+          style={{ width: '60px', background: '#333', color: 'white', border: '1px solid #555' }}
+        />
+      </div>
+
+      <button 
+        onClick={copyToClipboard}
+        style={{
+          background: '#2196F3',
+          color: 'white',
+          border: 'none',
+          padding: '10px 20px',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          width: '100%',
+          marginTop: '10px'
+        }}
+      >
+        📋 Copy Camera Config
+      </button>
+    </div>
   )
 }
 
