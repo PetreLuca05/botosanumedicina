@@ -1,12 +1,18 @@
 
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { Box, OrbitControls, ScrollControls, Scroll, useScroll } from '@react-three/drei'
+import { EffectComposer, Bloom, ChromaticAberration, Vignette } from '@react-three/postprocessing'
+import { BlendFunction } from 'postprocessing'
 import './TabSlide1.css'
+import Model from './Sangelesilimfa.jsx'
 
 function Home() {
   return (
     <>
-      <Canvas style={{ height: '100vh' }}>
+      <Canvas 
+        style={{ height: '100vh' }} 
+        camera={{ position: [0, 2, 5], fov: 40 }}
+      >
         <ScrollControls pages={8} damping={0.1}>
           <Scene />
           <Scroll html style={{ width: '100%' }}>
@@ -25,26 +31,6 @@ function Home() {
   )
 }
 
-function Scene() {
-  return (
-    <>
-      <CameraRig />
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} />
-      <group rotation={[0, 90, 0]} position={[0, .5, 0]}>
-        <Box position={[-1.2, 0, 0]} rotation={[0.1, 0.1, 0]}>
-          <meshStandardMaterial color="orange" />
-        </Box>
-        <Box position={[1.2, 0, 0]} rotation={[0.1, 0.1, 0]}>
-          <meshStandardMaterial color="hotpink" />
-        </Box>
-      </group>
-      <gridHelper args={[25, 25]} />
-      <OrbitControls enablePan={false} enableZoom={false} enableRotate={true} />
-    </>
-  );
-}
-
 function CameraRig() {
   const { camera } = useThree()
   const scroll = useScroll()
@@ -56,12 +42,66 @@ function CameraRig() {
     camera.position.x = Math.sin(offset * Math.PI * 2) * 5
     camera.position.y = 2 + offset * 3 // Move camera up as we scroll
     camera.position.z = Math.cos(offset * Math.PI * 2) * 5
+
+    camera.fov = 40
+    camera.updateProjectionMatrix()
     
     // Always look at the center
     camera.lookAt(0, 0, 0)
   })
   
   return null
+}
+
+
+function PostProcessing({enabled = true}) {
+
+  if(!enabled) return null;
+
+  return (
+    <EffectComposer>
+      <Bloom 
+        intensity={0.3}
+        luminanceThreshold={0.9}
+        luminanceSmoothing={0.025}
+        blendFunction={BlendFunction.ADD}
+      />
+    </EffectComposer>
+  )
+}
+
+function Lighting() {
+  return (
+    <>
+      <ambientLight intensity={1} />
+      <directionalLight 
+        position={[10, 10, 5]} 
+        intensity={2}
+      />
+      <pointLight position={[10, 10, 10]} intensity={0.4} />
+      {/* Additional fill light for better overall illumination */}
+      <pointLight position={[-5, 5, -5]} intensity={0.2} color="#4080ff" />
+    </>
+  )
+}
+
+
+function Scene() {
+  return (
+    <>
+      <CameraRig />
+      <PostProcessing enabled={false} />
+      <Lighting />
+
+      <group rotation={[0, -45, 0]} position={[0, 0, 0]}>
+        <Model position={[0, 0, 0]} rotation={[0, Math.PI / 2, 0]} scale={.9} />
+      </group>
+
+      <gridHelper args={[25, 25]} material-transparent={true} material-opacity={0.2} />
+
+      <OrbitControls enablePan={false} enableZoom={false} enableRotate={true} />
+    </>
+  );
 }
 
 function Hero() {
