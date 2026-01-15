@@ -1,12 +1,16 @@
 
 import './Muschi.css';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
-import { Box, OrbitControls, ScrollControls, Scroll, useScroll, Stats } from '@react-three/drei'
+import { Box, OrbitControls, ScrollControls, Scroll, useScroll, Stats, Text } from '@react-three/drei';
 import * as THREE from 'three';
+import MODEL_Muscles from '../../components/m_muscles';
+import { useState, useRef } from 'react';
+import { EffectComposer, Bloom, ChromaticAberration, Vignette } from '@react-three/postprocessing'
+import { BlendFunction } from 'postprocessing'
 
 const cameraStates = [
   { position: [0, 2, 10], lookAt: [0, 0, 0], fov: 50 },
-  { position: [5, 3, 8], lookAt: [2, 1, 0], fov: 35 },
+  { position: [1, 1, 6], lookAt: [.2, 0, 0], fov: 35 },
   { position: [-3, 1, 6], lookAt: [-2, 0, 0], fov: 60 },
   { position: [-3, 1, 6], lookAt: [-2, 0, 0], fov: 60 },
   { position: [-3, 1, 6], lookAt: [-2, 0, 0], fov: 60 },
@@ -46,30 +50,127 @@ function CameraController() {
   return null;
 }
 
-function Scene() {
+function PostProcessing({enabled = true}) {
+  if(!enabled) return null;
+  return (
+    <EffectComposer>
+      <Bloom 
+        intensity={1}
+        luminanceThreshold={0.3}
+        luminanceSmoothing={0.025}
+        blendFunction={BlendFunction.ADD}
+      />
+
+      <ChromaticAberration
+        blendFunction={BlendFunction.NORMAL}
+        offset={[0.001, 0.001]}
+      />
+    </EffectComposer>
+  )
+}
+
+function Skybox() {
+  const { scene } = useThree()
+    const sphereRef = useRef()
+    
+    useFrame(() => {
+      if (sphereRef.current) {
+        sphereRef.current.rotation.y += 0.01
+      }
+    })
+
+    // Create gradient material
+    const gradientMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        color1: { value: new THREE.Color(0x0066ff) },
+        color2: { value: new THREE.Color(0xff6600) }
+      },
+      side: THREE.BackSide,
+      vertexShader: `
+        varying vec3 vPosition;
+        void main() {
+          vPosition = position;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 color1;
+        uniform vec3 color2;
+        varying vec3 vPosition;
+        void main() {
+          float mixValue = (vPosition.y + 1.0) / 2.0;
+          gl_FragColor = vec4(mix(color1, color2, mixValue), 1.0);
+        }
+      `
+    })
+
+    return (
+      <mesh ref={sphereRef} position={[0, 0, 0]} scale={100}>
+        <sphereGeometry args={[1, 32, 32]} />
+        <primitive object={gradientMaterial} attach="material" />
+      </mesh>
+    )
+}
+
+function Scene({ currentPage }) {
   return (
     <>
       <CameraController />
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} />
-      <mesh position={[0, 0, 0]} rotation={[0.1, 0.1, 0]}>
-        <sphereGeometry args={[1, 32, 32]} />
-        <meshStandardMaterial color="orange" />
-      </mesh>
-      <gridHelper args={[10, 10]} />
+      <ambientLight intensity={0.3} />
+      <directionalLight
+        position={[-5, 10, 5]}
+        intensity={1.2}
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+      />
+      <pointLight position={[10, 10, 10]} intensity={0.5} />
+      <MuscleModelRig currentPage={currentPage} />
+      {/* <gridHelper args={[10, 10]} /> */}
+      <PostProcessing enabled={true} />
+      <Skybox />
     </>
   );
 }
 
+function MuscleModelRig({ currentPage }) {
+  // You can use currentPage here to control animation, visibility, etc.
+  return (
+    <group>
+      <MODEL_Muscles position={[0, 0, 0]} scale={[0.5, 0.5, 0.5]} currentPage={currentPage} />
+    </group>
+  );
+}
+
 function Muschi() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const scrollRef = useRef();
+
+  // Custom hook to track scroll page
+  function PageTracker() {
+    const scroll = useScroll();
+    const PAGE_OFFSET = 0.3; // Change this value for earlier/later switching
+    useFrame(() => {
+      if (!scroll) return;
+      const pages = cameraStates.length;
+      const offset = scroll.offset * (pages - 1) - PAGE_OFFSET;
+      const page = Math.max(1, Math.min(pages, Math.round(offset) + 1)); // Clamp between 1 and pages
+      setCurrentPage(page);
+    });
+    return null;
+  }
+
   return (
     <article className="Muschi">
+      <div style={{position: 'absolute', top: 10, left: 10, zIndex: 10, background: 'rgba(0,0,0,0.5)', color: 'white', padding: '0.5rem', borderRadius: '8px'}}>
+        currentPage = {currentPage}
+      </div>
       <Canvas style={{ height: '100vh' }} camera={{ position: [0, 2, 5], fov: 40 }}>
         <ScrollControls pages={cameraStates.length} damping={0.1}>
-          <Scene />
+          <PageTracker />
+          <Scene currentPage={currentPage} />
           <Scroll html style={{ width: '100%' }}>
             <Hero />
-
             <CeEste />
             <CeEsteContractia />
             <Structura />
