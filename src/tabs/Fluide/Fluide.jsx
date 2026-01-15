@@ -10,7 +10,7 @@ import MODEL_Inima from '../../components/m_inima'
 import * as THREE from 'three'
 import MODEL_Arm from '../../components/m_arm'
 
-function Home() {
+function Fluide() {
   const [animationsSpeed, setAnimationsSpeed] = useState(.25);
   const [heartBpm, setHeartBpm] = useState(72); // Default BPM
   const [animationTime, setAnimationTime] = useState(0); // Animation time control
@@ -776,4 +776,4 @@ function CameraDebugPanel({ debugMode, setDebugMode, debugCamera, setDebugCamera
   )
 }
 
-export default Home
+export default Fluide
