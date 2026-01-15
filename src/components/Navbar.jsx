@@ -19,15 +19,28 @@ function Navbar() {
     window.currentLanguage = language
   }, [])
 
+  const [showBack, setShowBack] = useState(window.location.pathname !== '/botosanumedicina')
+
+  React.useEffect(() => {
+    const handleTabChange = () => {
+      // You can customize this logic to check for tab or route
+      setShowBack(window.location.pathname !== '/botosanumedicina')
+    }
+    window.addEventListener('tabChanged', handleTabChange)
+    window.addEventListener('popstate', handleTabChange)
+    return () => {
+      window.removeEventListener('tabChanged', handleTabChange)
+      window.removeEventListener('popstate', handleTabChange)
+    }
+  }, [])
+
   return (
     <section className="navbar">
-      {window.location.pathname !== '/botosanumedicina' && (
-        // <p onClick={() => window.location.href = '/botosanumedicina'}>back</p>
+      {showBack && (
         <article className="back-button" onClick={() => window.location.href = '/botosanumedicina'}>
           <i className="fa-solid fa-angle-left"></i>
         </article>
       )}
-
       <button onClick={toggleLanguage} className="language-toggle">
         {language}
       </button>

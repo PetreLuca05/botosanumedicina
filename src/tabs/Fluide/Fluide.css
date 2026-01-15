@@ -105,15 +105,8 @@ button:hover{
   margin-top: 100px;
 }
 
-.cepune article:nth-child(3) {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.cepune article h3 {
-  margin-top: auto;
+.cepune article input {
+  max-width: 50%;
 }
 
 .presiune {

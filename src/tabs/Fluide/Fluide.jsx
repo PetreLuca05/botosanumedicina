@@ -28,7 +28,7 @@ function Home() {
           style={{ height: '100vh' }} 
           camera={{ position: [0, 2, 5], fov: 40 }}
         >
-          <ScrollControls pages={6} damping={0.1}>
+          <ScrollControls pages={5} damping={0.1}>
             <Scene 
               animationsSpeed={animationsSpeed} 
               heartBpm={heartBpm}
@@ -42,20 +42,20 @@ function Home() {
               <CeEsteUnFluid />
               <Necesara animationsSpeed={animationsSpeed} setAnimationsSpeed={setAnimationsSpeed}/>
               <CePune setHeartBpm={setHeartBpm} setAnimationTime={setAnimationTime} animationTime={animationTime} />
-              <Presiune />
-              <Probleme />
+              {/* <Presiune /> */}
+              {/* <Probleme /> */}
             </Scroll>
           </ScrollControls>
         </Canvas>
-        
+        {/* <Stats /> */}
         {/* Camera Debug Panel - Outside Canvas */}
-        <CameraDebugPanel 
+        {/* <CameraDebugPanel 
           debugMode={debugMode}
           setDebugMode={setDebugMode}
           debugCamera={debugCamera}
           setDebugCamera={setDebugCamera}
           currentSection={currentSection}
-        />
+        /> */}
     </>
   )
 }
@@ -71,13 +71,12 @@ function CameraRig({ debugMode, debugCamera, setCurrentSection }) {
     // CeEsteUnFluid - Close up right side
     { position: [-2, 0.9, 4.8], lookAt: [0, .3, -0.9], fov: 45 },
     // Necesara - Top down view
-    { position: [-10.2, 8.0, -0.1], lookAt: [0.0, 0, 0.0], fov: 15 },
+    { position: [-10.2, 8.0, -0.1], lookAt: [0.0, 0, .2], fov: 15 },
     // CePune - Left side angle
     { position: [0.0, 0.0, -3.6], lookAt: [0.0, 0.0, 0.0], fov: 80 },
     // Presiune - Bottom view looking up
-    { position: [-9.3, 1, -3.0], lookAt: [0.0, 1.7, 0.0], fov: 55 },
+    { position: [-9.3, 1, -3.0], lookAt: [0.0, 1.7, 0.0], fov: 45 },
     // Probleme - Wide overview
-    { position: [0, 6, 12], lookAt: [0, 0, 0], fov: 50 }
   ]
   
   useFrame(() => {
@@ -215,7 +214,6 @@ function HeartRig({ animationsSpeed, heartBpm = 72 }) {
     // Presiune - Heart center stage
     { position: [0, 0, 0], scale: 0 },
     // Probleme - Heart fading away
-    { position: [0, 0, 0], scale: 0 }
   ]
   
   useFrame(() => {
@@ -291,7 +289,6 @@ function ArmRig({ animationTime }) {
     // Presiune - Heart center stage
     { position: [0, 0, 0], scale: 1 },
     // Probleme - Heart fading away
-    { position: [0, 0, 0], scale: 0 }
   ]
   
   useFrame(() => {
@@ -345,11 +342,10 @@ function ArmRig({ animationTime }) {
   
   return (
     <group ref={armRef}>
-      <MODEL_Arm position={[0, -0.1, 0]} rotation={[0, Math.PI / 2, 0]} scale={.9} animationTime={animationTime}/>
+      <MODEL_Arm position={[0, -0.1, 0]} rotation={[0, Math.PI / 2, 0]} scale={.8} animationTime={animationTime}/>
     </group>
   )
 }
-
 
 function Skybox() {
   const { scene } = useThree()
@@ -411,7 +407,7 @@ function Scene({ animationsSpeed, heartBpm, animationTime, debugMode, debugCamer
       <Lighting />
 
       <group rotation={[0, -45, 0]} position={[0, -.1, 0]}>
-        <MODEL_Sange position={[0, 0, 0]} rotation={[0, Math.PI / 2, 0]} scale={.9} animationSpeed={combinedAnimationSpeed} />
+        <MODEL_Sange position={[0, 0, 0]} rotation={[0, Math.PI / 2, 0]} scale={.9} animationSpeed={combinedAnimationSpeed}  />
         <ArmRig animationTime={animationTime} />
       </group>
 
@@ -427,7 +423,6 @@ function Scene({ animationsSpeed, heartBpm, animationTime, debugMode, debugCamer
       <Skybox />
       
       {/* FPS Stats */}
-      <Stats />
     </>
   );
 }
@@ -574,7 +569,11 @@ function CePune({ setHeartBpm, setAnimationTime, animationTime }){
           max="2" // Animation duration in seconds
           step="0.01"
           value={animationTime || 0}
-          onChange={(e) => setAnimationTime(parseFloat(e.target.value))}
+          onChange={(e) => {
+            setAnimationTime(parseFloat(e.target.value))
+            handleBpmChange(parseInt(e.target.value))
+          }
+          }
         />
       </article>
       {/* 👉 Apasă pe inimă → vezi pulsul și debitul.
@@ -583,40 +582,6 @@ function CePune({ setHeartBpm, setAnimationTime, animationTime }){
   )
 }
 
-function Presiune() {
-  return (
-    <figure className="presiune">
-      <h2>4️⃣ Presiunea și viteza de curgere</h2>
-      <p>Fluidul curge din zona cu presiune mare spre presiune mică.</p>
-      <h3>Viteza depinde de:</h3>
-      <ul>
-        <li>diametrul vasului</li>
-        <li>presiune</li>
-        <li>vâscozitate</li>
-      </ul>
-      👉 Slider pentru diametrul vasului → vezi viteza modificată.
-      
-    </figure>
-  )
-}
-
-function Probleme() {
-  return (
-    <figure className="probleme">
-      <h2>5️⃣ Probleme când curgerea este afectată</h2>
-      <p>Când curgerea fluidelor este întreruptă sau îngreunată, pot apărea diverse probleme de sănătate care afectează funcționarea organismului.</p>
-
-      <ul>
-      <li>🩸 Hipertensiune</li>
-      <li>🫀 Tromboză</li>
-      <li>💧 Edem (limfa nu circulă)</li>
-      <li>Varice</li>
-      </ul>
-
-      👉 Click pe fiecare vas → apare explicația + animație.
-    </figure>
-    )
-}
 
 function CameraDebugPanel({ debugMode, setDebugMode, debugCamera, setDebugCamera, currentSection }) {
   const sectionNames = [

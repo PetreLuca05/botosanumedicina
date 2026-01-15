@@ -6,7 +6,7 @@ function SolidColorMaterial(color) {
   return new THREE.MeshBasicMaterial({ color: color, side: THREE.FrontSide })
 } 
 
-export function MODEL_Sange(props, showVeins = true, showLimfa = true) {
+export function MODEL_Sange(props, showVeins = 1, showLimfa = 1) {
   const { animationSpeed = 1 } = props
   const { nodes, materials, animations } = useGLTF('./models/sangelesilimfa.glb')
   const group = React.useRef()
@@ -36,8 +36,9 @@ export function MODEL_Sange(props, showVeins = true, showLimfa = true) {
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
-        {showVeins && (
-        <group name="BloodStream">
+        <group name="BloodStream" scale={showVeins}>
+          <mesh name="Connecting_Veins" geometry={nodes.Connecting_Veins.geometry} material={materials.Gradient} />
+
           <mesh name="BézierCurve007" geometry={nodes.BézierCurve007.geometry} material={materials.Blue} position={[0, 0, .1]}/>
           <mesh name="BézierCurve007_1" geometry={nodes.BézierCurve007_1.geometry} material={SolidColorMaterial('#0e005a')} position={[0, 0, .1]} />
           <mesh name="BézierCurve015" geometry={nodes.BézierCurve015.geometry} material={materials.Red} />
@@ -311,89 +312,83 @@ export function MODEL_Sange(props, showVeins = true, showLimfa = true) {
           <mesh name="particle336" geometry={nodes.particle336.geometry} material={materials.Red} position={[-2.166, -0.595, 0.172]} rotation={[2.34, -1.145, 2.464]} scale={0.001} />
           <mesh name="particle337" geometry={nodes.particle337.geometry} material={materials.Red} position={[-2.078, -0.52, 0.057]} rotation={[-0.041, -0.34, -0.01]} scale={0.001} />
         </group>
-        )}
 
-        {showLimfa && (
-        <group name="Lymphatic System">
+        <group name="Lymphatic System" scale={showLimfa}>
           <group name="Limfa">
             <mesh name="BézierCurve016" geometry={nodes.BézierCurve016.geometry} material={materials.M2} />
             <mesh name="BézierCurve016_1" geometry={nodes.BézierCurve016_1.geometry} material={SolidColorMaterial('#002c0b')} />
           </group>
           
-           <mesh name="particle000" geometry={nodes.particle000.geometry} material={materials.M2} position={[2.07, -0.642, 0.197]} rotation={[1.432, 0.5, -1.795]} scale={0.001} />
-        <mesh name="particle001" geometry={nodes.particle001.geometry} material={materials.M2} position={[2.059, -0.679, 0.197]} rotation={[-2.217, 0.414, 2.253]} scale={0.001} />
-        <mesh name="particle002" geometry={nodes.particle002.geometry} material={materials.M2} position={[2.025, -0.658, 0.148]} rotation={[-1.313, -1.013, 2.388]} scale={0.04} />
-        <mesh name="particle003" geometry={nodes.particle003.geometry} material={materials.M2} position={[1.899, -0.548, 0.16]} rotation={[0.991, 0.203, 2.206]} scale={0.04} />
-        <mesh name="particle004" geometry={nodes.particle004.geometry} material={materials.M2} position={[1.663, -0.403, 0.202]} rotation={[1.273, 0.509, 1.262]} scale={0.04} />
-        <mesh name="particle138" geometry={nodes.particle138.geometry} material={materials.M2} position={[1.49, -0.306, 0.196]} rotation={[0.805, 0.478, 2.119]} scale={0.04} />
-        <mesh name="particle139" geometry={nodes.particle139.geometry} material={materials.M2} position={[1.235, -0.133, 0.179]} rotation={[1.532, -0.812, 0.78]} scale={0.04} />
-        <mesh name="particle140" geometry={nodes.particle140.geometry} material={materials.M2} position={[0.97, -0.084, 0.168]} rotation={[-2.475, -0.31, 2.669]} scale={0.04} />
-        <mesh name="particle141" geometry={nodes.particle141.geometry} material={materials.M2} position={[0.751, -0.042, 0.06]} rotation={[-2.677, 0.44, 2.498]} scale={0.04} />
-        <mesh name="particle142" geometry={nodes.particle142.geometry} material={materials.M2} position={[0.488, 0.04, 0.058]} rotation={[-0.134, -0.697, 0.482]} scale={0.04} />
-        <mesh name="particle143" geometry={nodes.particle143.geometry} material={materials.M2} position={[0.232, 0.003, -0.014]} rotation={[2.656, 1.196, 3.03]} scale={0.04} />
-        <mesh name="particle144" geometry={nodes.particle144.geometry} material={materials.M2} position={[-0.032, 0, -0.004]} rotation={[-2.949, -0.892, 2.091]} scale={0.04} />
-        <mesh name="particle145" geometry={nodes.particle145.geometry} material={materials.M2} position={[-0.285, -0.023, -0.038]} rotation={[1.486, -0.829, 2.265]} scale={0.04} />
-        <mesh name="particle146" geometry={nodes.particle146.geometry} material={materials.M2} position={[-0.564, -0.073, -0.096]} rotation={[2.089, 1.094, -2.847]} scale={0.04} />
-        <mesh name="particle147" geometry={nodes.particle147.geometry} material={materials.M2} position={[-0.805, -0.076, -0.14]} rotation={[-1.597, -0.162, -0.195]} scale={0.04} />
-        <mesh name="particle148" geometry={nodes.particle148.geometry} material={materials.M2} position={[-1.067, -0.04, -0.088]} rotation={[0.25, 0.034, 2.168]} scale={0.04} />
-        <mesh name="particle149" geometry={nodes.particle149.geometry} material={materials.M2} position={[-1.286, 0.048, -0.104]} rotation={[3.067, 0.701, -0.054]} scale={0.04} />
-        <mesh name="particle150" geometry={nodes.particle150.geometry} material={materials.M2} position={[-1.578, 0.094, -0.097]} rotation={[0.026, 0.221, -0.845]} scale={0.04} />
-        <mesh name="particle151" geometry={nodes.particle151.geometry} material={materials.M2} position={[-1.793, 0.258, -0.083]} rotation={[-2.041, -0.154, 3.044]} scale={0.04} />
-        <mesh name="particle152" geometry={nodes.particle152.geometry} material={materials.M2} position={[-2.011, 0.354, -0.012]} rotation={[-1.446, -0.154, -1.039]} scale={0.04} />
-        <mesh name="particle153" geometry={nodes.particle153.geometry} material={materials.M2} position={[-2.271, 0.505, -0.019]} rotation={[-2.032, -0.502, -2.512]} scale={0.04} />
-        <mesh name="particle154" geometry={nodes.particle154.geometry} material={materials.M2} position={[-2.449, 0.689, 0.025]} rotation={[-2.612, -0.805, -2.85]} scale={0.04} />
-        <mesh name="particle155" geometry={nodes.particle155.geometry} material={materials.M2} position={[-2.641, 0.876, 0.003]} rotation={[-Math.PI, Math.PI / 8, -Math.PI]} scale={0.001} />
-        <mesh name="particle156" geometry={nodes.particle156.geometry} material={materials.M2} position={[1.982, -0.587, 0.193]} rotation={[-1.854, -0.181, 2.78]} scale={0.001} />
-        <mesh name="particle157" geometry={nodes.particle157.geometry} material={materials.M2} position={[2.075, -0.682, 0.171]} rotation={[0.731, -1.229, 2.105]} scale={0.001} />
-        <mesh name="particle158" geometry={nodes.particle158.geometry} material={materials.M2} position={[2.018, -0.665, 0.184]} rotation={[0.633, 0.767, -2.845]} scale={0.001} />
-        <mesh name="particle159" geometry={nodes.particle159.geometry} material={materials.M2} position={[2.054, -0.624, 0.166]} rotation={[-2.645, -0.014, -3.048]} scale={0.001} />
-        <mesh name="particle160" geometry={nodes.particle160.geometry} material={materials.M2} position={[2.023, -0.634, 0.168]} rotation={[-3.032, -1.169, -0.173]} scale={0.001} />
-        <mesh name="particle161" geometry={nodes.particle161.geometry} material={materials.M2} position={[2.036, -0.687, 0.157]} rotation={[0.431, 0.541, 0.409]} scale={0.001} />
-        <mesh name="particle162" geometry={nodes.particle162.geometry} material={materials.M2} position={[2.034, -0.663, 0.203]} rotation={[1.508, 0.496, 0.179]} scale={0.001} />
-        <mesh name="particle163" geometry={nodes.particle163.geometry} material={materials.M2} position={[2.041, -0.628, 0.191]} rotation={[-1.285, 0.136, 1.679]} scale={0.001} />
-        <mesh name="particle164" geometry={nodes.particle164.geometry} material={materials.M2} position={[2.053, -0.624, 0.183]} rotation={[-0.541, -0.649, -1.589]} scale={0.001} />
-        <mesh name="particle165" geometry={nodes.particle165.geometry} material={materials.M2} position={[2.028, -0.63, 0.161]} rotation={[-1.283, -0.029, -1.107]} scale={0.001} />
-        <mesh name="particle166" geometry={nodes.particle166.geometry} material={materials.M2} position={[2.033, -0.629, 0.159]} rotation={[0.537, -0.684, 0.159]} scale={0.001} />
-        <mesh name="particle167" geometry={nodes.particle167.geometry} material={materials.M2} position={[1.966, -0.617, 0.203]} rotation={[-1.756, -0.26, 1.072]} scale={0.001} />
-        <mesh name="particle168" geometry={nodes.particle168.geometry} material={materials.M2} position={[1.76, -0.432, 0.202]} rotation={[-0.251, 1.055, -1.566]} scale={0.001} />
-        <mesh name="particle169" geometry={nodes.particle169.geometry} material={materials.M2} position={[1.551, -0.296, 0.18]} rotation={[2.152, 0.781, 1.047]} scale={0.001} />
-        <mesh name="particle170" geometry={nodes.particle170.geometry} material={materials.M2} position={[1.338, -0.235, 0.202]} rotation={[0.404, 0.845, -1.191]} scale={0.001} />
-        <mesh name="particle171" geometry={nodes.particle171.geometry} material={materials.M2} position={[1.103, -0.119, 0.184]} rotation={[-2.009, -0.229, -2.556]} scale={0.001} />
-        <mesh name="particle172" geometry={nodes.particle172.geometry} material={materials.M2} position={[0.814, -0.021, 0.118]} rotation={[0.847, -0.406, 1.447]} scale={0.001} />
-        <mesh name="particle173" geometry={nodes.particle173.geometry} material={materials.M2} position={[0.612, -0.017, 0.054]} rotation={[0.29, 0.871, -1.234]} scale={0.001} />
-        <mesh name="particle174" geometry={nodes.particle174.geometry} material={materials.M2} position={[0.325, 0.057, 0.033]} rotation={[0.005, -0.398, 0.594]} scale={0.001} />
-        <mesh name="particle175" geometry={nodes.particle175.geometry} material={materials.M2} position={[0.055, 0.009, -0.047]} rotation={[2.797, 0.83, -2.526]} scale={0.001} />
-        <mesh name="particle176" geometry={nodes.particle176.geometry} material={materials.M2} position={[-0.213, 0.022, -0.056]} rotation={[0.601, -0.158, 0.589]} scale={0.001} />
-        <mesh name="particle177" geometry={nodes.particle177.geometry} material={materials.M2} position={[-0.42, -0.017, -0.091]} rotation={[1.751, 0.6, -1.386]} scale={0.001} />
-        <mesh name="particle178" geometry={nodes.particle178.geometry} material={materials.M2} position={[-0.726, -0.028, -0.134]} rotation={[1.197, -0.624, 1.022]} scale={0.001} />
-        <mesh name="particle179" geometry={nodes.particle179.geometry} material={materials.M2} position={[-0.944, -0.039, -0.096]} rotation={[2.414, 0.413, -0.314]} scale={0.001} />
-        <mesh name="particle180" geometry={nodes.particle180.geometry} material={materials.M2} position={[-1.208, 0.007, -0.081]} rotation={[-2.743, -0.757, -0.227]} scale={0.001} />
-        <mesh name="particle181" geometry={nodes.particle181.geometry} material={materials.M2} position={[-1.461, 0.055, -0.092]} rotation={[0.607, 0.312, 0.157]} scale={0.001} />
-        <mesh name="particle182" geometry={nodes.particle182.geometry} material={materials.M2} position={[-1.715, 0.168, -0.095]} rotation={[0.464, -0.256, -1.899]} scale={0.001} />
-        <mesh name="particle183" geometry={nodes.particle183.geometry} material={materials.M2} position={[-1.967, 0.312, -0.073]} rotation={[-0.204, 0.272, 0.546]} scale={0.001} />
-        <mesh name="particle184" geometry={nodes.particle184.geometry} material={materials.M2} position={[-2.186, 0.441, -0.014]} rotation={[2.852, 0.413, 1.697]} scale={0.001} />
-        <mesh name="particle185" geometry={nodes.particle185.geometry} material={materials.M2} position={[-2.365, 0.655, 0.012]} rotation={[1.757, -1.075, -2.808]} scale={0.001} />
-        <mesh name="particle186" geometry={nodes.particle186.geometry} material={materials.M2} position={[-2.525, 0.828, 0.017]} rotation={[-0.121, -0.524, 0.532]} scale={0.001} />
-        <mesh name="particle187" geometry={nodes.particle187.geometry} material={materials.M2} position={[-2.628, 0.876, -0.019]} rotation={[-Math.PI, 1.178, -Math.PI]} scale={0.001} />
-        <mesh name="particle188" geometry={nodes.particle188.geometry} material={materials.M2} position={[-2.595, 0.86, 0.035]} rotation={[0, -1.178, -0.591]} scale={0.001} />
-        <mesh name="particle189" geometry={nodes.particle189.geometry} material={materials.M2} position={[-2.623, 0.845, 0.023]} rotation={[Math.PI, -1.178, 2.55]} scale={0.001} />
-        <mesh name="particle190" geometry={nodes.particle190.geometry} material={materials.M2} position={[-2.598, 0.84, 0.006]} rotation={[0, Math.PI / 8, -1.233]} scale={0.001} />
-        <mesh name="particle191" geometry={nodes.particle191.geometry} material={materials.M2} position={[-2.633, 0.876, 0.028]} rotation={[Math.PI, -Math.PI / 8, Math.PI]} scale={0.001} />
-        <mesh name="particle192" geometry={nodes.particle192.geometry} material={materials.M2} position={[-2.577, 0.882, 0.018]} rotation={[0, -Math.PI / 8, 0]} scale={0.001} />
-        <mesh name="particle193" geometry={nodes.particle193.geometry} material={materials.M2} position={[-2.593, 0.904, -0.007]} rotation={[0, Math.PI / 8, 1.233]} scale={0.001} />
-        <mesh name="particle194" geometry={nodes.particle194.geometry} material={materials.M2} position={[-2.614, 0.851, -0.018]} rotation={[-Math.PI, 1.178, 2.55]} scale={0.001} />
-        <mesh name="particle195" geometry={nodes.particle195.geometry} material={materials.M2} position={[-2.587, 0.896, -0.01]} rotation={[0, Math.PI / 8, 0.591]} scale={0.001} />
-        <mesh name="particle196" geometry={nodes.particle196.geometry} material={materials.M2} position={[-2.578, 0.882, -0.006]} rotation={[0, Math.PI / 8, 0]} scale={0.001} />
-        <mesh name="particle197" geometry={nodes.particle197.geometry} material={materials.M2} position={[-2.609, 0.837, 0.007]} rotation={[-Math.PI, Math.PI / 8, 1.909]} scale={0.001} />
-        <mesh name="particle198" geometry={nodes.particle198.geometry} material={materials.M2} position={[-2.636, 0.872, -0.009]} rotation={[-Math.PI, Math.PI / 8, -Math.PI]} scale={0.001} />
-        <mesh name="particle199" geometry={nodes.particle199.geometry} material={materials.M2} position={[-2.6, 0.839, 0.009]} rotation={[0, -Math.PI / 8, -1.233]} scale={0.001} />
-        <mesh name="particle200" geometry={nodes.particle200.geometry} material={materials.M2} position={[-2.577, 0.882, 0.018]} rotation={[0, -Math.PI / 8, 0]} scale={0.001} />
-        <mesh name="particle201" geometry={nodes.particle201.geometry} material={materials.M2} position={[-2.609, 0.837, 0.007]} rotation={[-Math.PI, Math.PI / 8, 1.909]} scale={0.001} />
+          <mesh name="particle000" geometry={nodes.particle000.geometry} material={materials.M2} position={[2.07, -0.642, 0.197]} rotation={[1.432, 0.5, -1.795]} scale={0.001} />
+          <mesh name="particle001" geometry={nodes.particle001.geometry} material={materials.M2} position={[2.059, -0.679, 0.197]} rotation={[-2.217, 0.414, 2.253]} scale={0.001} />
+          <mesh name="particle002" geometry={nodes.particle002.geometry} material={materials.M2} position={[2.025, -0.658, 0.148]} rotation={[-1.313, -1.013, 2.388]} scale={0.04} />
+          <mesh name="particle003" geometry={nodes.particle003.geometry} material={materials.M2} position={[1.899, -0.548, 0.16]} rotation={[0.991, 0.203, 2.206]} scale={0.04} />
+          <mesh name="particle004" geometry={nodes.particle004.geometry} material={materials.M2} position={[1.663, -0.403, 0.202]} rotation={[1.273, 0.509, 1.262]} scale={0.04} />
+          <mesh name="particle138" geometry={nodes.particle138.geometry} material={materials.M2} position={[1.49, -0.306, 0.196]} rotation={[0.805, 0.478, 2.119]} scale={0.04} />
+          <mesh name="particle139" geometry={nodes.particle139.geometry} material={materials.M2} position={[1.235, -0.133, 0.179]} rotation={[1.532, -0.812, 0.78]} scale={0.04} />
+          <mesh name="particle140" geometry={nodes.particle140.geometry} material={materials.M2} position={[0.97, -0.084, 0.168]} rotation={[-2.475, -0.31, 2.669]} scale={0.04} />
+          <mesh name="particle141" geometry={nodes.particle141.geometry} material={materials.M2} position={[0.751, -0.042, 0.06]} rotation={[-2.677, 0.44, 2.498]} scale={0.04} />
+          <mesh name="particle142" geometry={nodes.particle142.geometry} material={materials.M2} position={[0.488, 0.04, 0.058]} rotation={[-0.134, -0.697, 0.482]} scale={0.04} />
+          <mesh name="particle143" geometry={nodes.particle143.geometry} material={materials.M2} position={[0.232, 0.003, -0.014]} rotation={[2.656, 1.196, 3.03]} scale={0.04} />
+          <mesh name="particle144" geometry={nodes.particle144.geometry} material={materials.M2} position={[-0.032, 0, -0.004]} rotation={[-2.949, -0.892, 2.091]} scale={0.04} />
+          <mesh name="particle145" geometry={nodes.particle145.geometry} material={materials.M2} position={[-0.285, -0.023, -0.038]} rotation={[1.486, -0.829, 2.265]} scale={0.04} />
+          <mesh name="particle146" geometry={nodes.particle146.geometry} material={materials.M2} position={[-0.564, -0.073, -0.096]} rotation={[2.089, 1.094, -2.847]} scale={0.04} />
+          <mesh name="particle147" geometry={nodes.particle147.geometry} material={materials.M2} position={[-0.805, -0.076, -0.14]} rotation={[-1.597, -0.162, -0.195]} scale={0.04} />
+          <mesh name="particle148" geometry={nodes.particle148.geometry} material={materials.M2} position={[-1.067, -0.04, -0.088]} rotation={[0.25, 0.034, 2.168]} scale={0.04} />
+          <mesh name="particle149" geometry={nodes.particle149.geometry} material={materials.M2} position={[-1.286, 0.048, -0.104]} rotation={[3.067, 0.701, -0.054]} scale={0.04} />
+          <mesh name="particle150" geometry={nodes.particle150.geometry} material={materials.M2} position={[-1.578, 0.094, -0.097]} rotation={[0.026, 0.221, -0.845]} scale={0.04} />
+          <mesh name="particle151" geometry={nodes.particle151.geometry} material={materials.M2} position={[-1.793, 0.258, -0.083]} rotation={[-2.041, -0.154, 3.044]} scale={0.04} />
+          <mesh name="particle152" geometry={nodes.particle152.geometry} material={materials.M2} position={[-2.011, 0.354, -0.012]} rotation={[-1.446, -0.154, -1.039]} scale={0.04} />
+          <mesh name="particle153" geometry={nodes.particle153.geometry} material={materials.M2} position={[-2.271, 0.505, -0.019]} rotation={[-2.032, -0.502, -2.512]} scale={0.04} />
+          <mesh name="particle154" geometry={nodes.particle154.geometry} material={materials.M2} position={[-2.449, 0.689, 0.025]} rotation={[-2.612, -0.805, -2.85]} scale={0.04} />
+          <mesh name="particle155" geometry={nodes.particle155.geometry} material={materials.M2} position={[-2.641, 0.876, 0.003]} rotation={[-Math.PI, Math.PI / 8, -Math.PI]} scale={0.001} />
+          <mesh name="particle156" geometry={nodes.particle156.geometry} material={materials.M2} position={[1.982, -0.587, 0.193]} rotation={[-1.854, -0.181, 2.78]} scale={0.001} />
+          <mesh name="particle157" geometry={nodes.particle157.geometry} material={materials.M2} position={[2.075, -0.682, 0.171]} rotation={[0.731, -1.229, 2.105]} scale={0.001} />
+          <mesh name="particle158" geometry={nodes.particle158.geometry} material={materials.M2} position={[2.018, -0.665, 0.184]} rotation={[0.633, 0.767, -2.845]} scale={0.001} />
+          <mesh name="particle159" geometry={nodes.particle159.geometry} material={materials.M2} position={[2.054, -0.624, 0.166]} rotation={[-2.645, -0.014, -3.048]} scale={0.001} />
+          <mesh name="particle160" geometry={nodes.particle160.geometry} material={materials.M2} position={[2.023, -0.634, 0.168]} rotation={[-3.032, -1.169, -0.173]} scale={0.001} />
+          <mesh name="particle161" geometry={nodes.particle161.geometry} material={materials.M2} position={[2.036, -0.687, 0.157]} rotation={[0.431, 0.541, 0.409]} scale={0.001} />
+          <mesh name="particle162" geometry={nodes.particle162.geometry} material={materials.M2} position={[2.034, -0.663, 0.203]} rotation={[1.508, 0.496, 0.179]} scale={0.001} />
+          <mesh name="particle163" geometry={nodes.particle163.geometry} material={materials.M2} position={[2.041, -0.628, 0.191]} rotation={[-1.285, 0.136, 1.679]} scale={0.001} />
+          <mesh name="particle164" geometry={nodes.particle164.geometry} material={materials.M2} position={[2.053, -0.624, 0.183]} rotation={[-0.541, -0.649, -1.589]} scale={0.001} />
+          <mesh name="particle165" geometry={nodes.particle165.geometry} material={materials.M2} position={[2.028, -0.63, 0.161]} rotation={[-1.283, -0.029, -1.107]} scale={0.001} />
+          <mesh name="particle166" geometry={nodes.particle166.geometry} material={materials.M2} position={[2.033, -0.629, 0.159]} rotation={[0.537, -0.684, 0.159]} scale={0.001} />
+          <mesh name="particle167" geometry={nodes.particle167.geometry} material={materials.M2} position={[1.966, -0.617, 0.203]} rotation={[-1.756, -0.26, 1.072]} scale={0.001} />
+          <mesh name="particle168" geometry={nodes.particle168.geometry} material={materials.M2} position={[1.76, -0.432, 0.202]} rotation={[-0.251, 1.055, -1.566]} scale={0.001} />
+          <mesh name="particle169" geometry={nodes.particle169.geometry} material={materials.M2} position={[1.551, -0.296, 0.18]} rotation={[2.152, 0.781, 1.047]} scale={0.001} />
+          <mesh name="particle170" geometry={nodes.particle170.geometry} material={materials.M2} position={[1.338, -0.235, 0.202]} rotation={[0.404, 0.845, -1.191]} scale={0.001} />
+          <mesh name="particle171" geometry={nodes.particle171.geometry} material={materials.M2} position={[1.103, -0.119, 0.184]} rotation={[-2.009, -0.229, -2.556]} scale={0.001} />
+          <mesh name="particle172" geometry={nodes.particle172.geometry} material={materials.M2} position={[0.814, -0.021, 0.118]} rotation={[0.847, -0.406, 1.447]} scale={0.001} />
+          <mesh name="particle173" geometry={nodes.particle173.geometry} material={materials.M2} position={[0.612, -0.017, 0.054]} rotation={[0.29, 0.871, -1.234]} scale={0.001} />
+          <mesh name="particle174" geometry={nodes.particle174.geometry} material={materials.M2} position={[0.325, 0.057, 0.033]} rotation={[0.005, -0.398, 0.594]} scale={0.001} />
+          <mesh name="particle175" geometry={nodes.particle175.geometry} material={materials.M2} position={[0.055, 0.009, -0.047]} rotation={[2.797, 0.83, -2.526]} scale={0.001} />
+          <mesh name="particle176" geometry={nodes.particle176.geometry} material={materials.M2} position={[-0.213, 0.022, -0.056]} rotation={[0.601, -0.158, 0.589]} scale={0.001} />
+          <mesh name="particle177" geometry={nodes.particle177.geometry} material={materials.M2} position={[-0.42, -0.017, -0.091]} rotation={[1.751, 0.6, -1.386]} scale={0.001} />
+          <mesh name="particle178" geometry={nodes.particle178.geometry} material={materials.M2} position={[-0.726, -0.028, -0.134]} rotation={[1.197, -0.624, 1.022]} scale={0.001} />
+          <mesh name="particle179" geometry={nodes.particle179.geometry} material={materials.M2} position={[-0.944, -0.039, -0.096]} rotation={[2.414, 0.413, -0.314]} scale={0.001} />
+          <mesh name="particle180" geometry={nodes.particle180.geometry} material={materials.M2} position={[-1.208, 0.007, -0.081]} rotation={[-2.743, -0.757, -0.227]} scale={0.001} />
+          <mesh name="particle181" geometry={nodes.particle181.geometry} material={materials.M2} position={[-1.461, 0.055, -0.092]} rotation={[0.607, 0.312, 0.157]} scale={0.001} />
+          <mesh name="particle182" geometry={nodes.particle182.geometry} material={materials.M2} position={[-1.715, 0.168, -0.095]} rotation={[0.464, -0.256, -1.899]} scale={0.001} />
+          <mesh name="particle183" geometry={nodes.particle183.geometry} material={materials.M2} position={[-1.967, 0.312, -0.073]} rotation={[-0.204, 0.272, 0.546]} scale={0.001} />
+          <mesh name="particle184" geometry={nodes.particle184.geometry} material={materials.M2} position={[-2.186, 0.441, -0.014]} rotation={[2.852, 0.413, 1.697]} scale={0.001} />
+          <mesh name="particle185" geometry={nodes.particle185.geometry} material={materials.M2} position={[-2.365, 0.655, 0.012]} rotation={[1.757, -1.075, -2.808]} scale={0.001} />
+          <mesh name="particle186" geometry={nodes.particle186.geometry} material={materials.M2} position={[-2.525, 0.828, 0.017]} rotation={[-0.121, -0.524, 0.532]} scale={0.001} />
+          <mesh name="particle187" geometry={nodes.particle187.geometry} material={materials.M2} position={[-2.628, 0.876, -0.019]} rotation={[-Math.PI, 1.178, -Math.PI]} scale={0.001} />
+          <mesh name="particle188" geometry={nodes.particle188.geometry} material={materials.M2} position={[-2.595, 0.86, 0.035]} rotation={[0, -1.178, -0.591]} scale={0.001} />
+          <mesh name="particle189" geometry={nodes.particle189.geometry} material={materials.M2} position={[-2.623, 0.845, 0.023]} rotation={[Math.PI, -1.178, 2.55]} scale={0.001} />
+          <mesh name="particle190" geometry={nodes.particle190.geometry} material={materials.M2} position={[-2.598, 0.84, 0.006]} rotation={[0, Math.PI / 8, -1.233]} scale={0.001} />
+          <mesh name="particle191" geometry={nodes.particle191.geometry} material={materials.M2} position={[-2.633, 0.876, 0.028]} rotation={[Math.PI, -Math.PI / 8, Math.PI]} scale={0.001} />
+          <mesh name="particle192" geometry={nodes.particle192.geometry} material={materials.M2} position={[-2.577, 0.882, 0.018]} rotation={[0, -Math.PI / 8, 0]} scale={0.001} />
+          <mesh name="particle193" geometry={nodes.particle193.geometry} material={materials.M2} position={[-2.593, 0.904, -0.007]} rotation={[0, Math.PI / 8, 1.233]} scale={0.001} />
+          <mesh name="particle194" geometry={nodes.particle194.geometry} material={materials.M2} position={[-2.614, 0.851, -0.018]} rotation={[-Math.PI, 1.178, 2.55]} scale={0.001} />
+          <mesh name="particle195" geometry={nodes.particle195.geometry} material={materials.M2} position={[-2.587, 0.896, -0.01]} rotation={[0, Math.PI / 8, 0.591]} scale={0.001} />
+          <mesh name="particle196" geometry={nodes.particle196.geometry} material={materials.M2} position={[-2.578, 0.882, -0.006]} rotation={[0, Math.PI / 8, 0]} scale={0.001} />
+          <mesh name="particle197" geometry={nodes.particle197.geometry} material={materials.M2} position={[-2.609, 0.837, 0.007]} rotation={[-Math.PI, Math.PI / 8, 1.909]} scale={0.001} />
+          <mesh name="particle198" geometry={nodes.particle198.geometry} material={materials.M2} position={[-2.636, 0.872, -0.009]} rotation={[-Math.PI, Math.PI / 8, -Math.PI]} scale={0.001} />
+          <mesh name="particle199" geometry={nodes.particle199.geometry} material={materials.M2} position={[-2.6, 0.839, 0.009]} rotation={[0, -Math.PI / 8, -1.233]} scale={0.001} />
+          <mesh name="particle200" geometry={nodes.particle200.geometry} material={materials.M2} position={[-2.577, 0.882, 0.018]} rotation={[0, -Math.PI / 8, 0]} scale={0.001} />
+          <mesh name="particle201" geometry={nodes.particle201.geometry} material={materials.M2} position={[-2.609, 0.837, 0.007]} rotation={[-Math.PI, Math.PI / 8, 1.909]} scale={0.001} />
         </group>
-        )}
-        {showVeins && (
-        <mesh name="Connecting_Veins" geometry={nodes.Connecting_Veins.geometry} material={materials.Gradient} />
-        )}
       </group>
     </group>
   )
