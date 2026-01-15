@@ -17,7 +17,7 @@ function createHeartMaterial() {
     clearcoat: 0.2,
     clearcoatRoughness: 0.1,
     emissive: '#e70000', // Subtle red glow
-    emissiveIntensity: .5,
+    emissiveIntensity: 1,
     side: THREE.FrontSide,
     transparent: false,
     opacity: 1
@@ -82,7 +82,7 @@ export function MODEL_Inima(props) {
       meshRef.current.scale.setScalar(currentScaleRef.current)
       
       // Apply heartbeat to material glow (also smoothed for high BPMs)
-      const glowIntensity = Math.max(0.2, 0.2 - (bpm - 60) * 0.001)
+      const glowIntensity = Math.max(0.5, 0.5 - (bpm - 1) * 0.001)
       heartMaterial.emissiveIntensity = 0.25 + heartbeat * glowIntensity
     }
   })

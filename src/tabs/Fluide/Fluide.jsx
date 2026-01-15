@@ -8,10 +8,12 @@ import MODEL_Sange from '../../components/m_sange'
 import { useState, useRef } from 'react';
 import MODEL_Inima from '../../components/m_inima'
 import * as THREE from 'three'
+import MODEL_Arm from '../../components/m_arm'
 
 function Home() {
   const [animationsSpeed, setAnimationsSpeed] = useState(.25);
   const [heartBpm, setHeartBpm] = useState(72); // Default BPM
+  const [animationTime, setAnimationTime] = useState(0); // Animation time control
   const [debugMode, setDebugMode] = useState(false);
   const [debugCamera, setDebugCamera] = useState({
     position: [0, 2, 8],
@@ -30,6 +32,7 @@ function Home() {
             <Scene 
               animationsSpeed={animationsSpeed} 
               heartBpm={heartBpm}
+              animationTime={animationTime}
               debugMode={debugMode}
               debugCamera={debugCamera}
               setCurrentSection={setCurrentSection}
@@ -38,7 +41,7 @@ function Home() {
               <Hero />
               <CeEsteUnFluid />
               <Necesara animationsSpeed={animationsSpeed} setAnimationsSpeed={setAnimationsSpeed}/>
-              <CePune setHeartBpm={setHeartBpm} />
+              <CePune setHeartBpm={setHeartBpm} setAnimationTime={setAnimationTime} animationTime={animationTime} />
               <Presiune />
               <Probleme />
             </Scroll>
@@ -72,7 +75,7 @@ function CameraRig({ debugMode, debugCamera, setCurrentSection }) {
     // CePune - Left side angle
     { position: [0.0, 0.0, -3.6], lookAt: [0.0, 0.0, 0.0], fov: 80 },
     // Presiune - Bottom view looking up
-    { position: [-5.4, 2.4, -6.0], lookAt: [0.0, 0.0, 0.0], fov: 35 },
+    { position: [-9.3, 1, -3.0], lookAt: [0.0, 1.7, 0.0], fov: 55 },
     // Probleme - Wide overview
     { position: [0, 6, 12], lookAt: [0, 0, 0], fov: 50 }
   ]
@@ -167,7 +170,7 @@ function PostProcessing({enabled = true}) {
     <EffectComposer>
       <Bloom 
         intensity={1}
-        luminanceThreshold={0.1}
+        luminanceThreshold={0.3}
         luminanceSmoothing={0.025}
         blendFunction={BlendFunction.ADD}
       />
@@ -185,7 +188,7 @@ function Lighting() {
     <>
       <ambientLight intensity={1} />
       <directionalLight 
-        position={[10, 10, 5]} 
+        position={[-10, 10, 5]} 
         intensity={2}
       />
       <pointLight position={[10, 10, 10]} intensity={0.4} />
@@ -271,7 +274,127 @@ function HeartRig({ animationsSpeed, heartBpm = 72 }) {
   )
 }
 
-function Scene({ animationsSpeed, heartBpm, debugMode, debugCamera, setCurrentSection }) {
+function ArmRig({ animationTime }) {
+  const scroll = useScroll()
+  const armRef = useRef()
+  
+  // Define heart positions for each section
+  const armPositions = [
+    // Hero - Off screen
+    { position: [0, 0, 0], scale: 0 },
+    // CeEsteUnFluid - Still hidden
+    { position: [0, 0, 0], scale: 0 },
+    // Necesara - Start appearing
+    { position: [0, 0, 0], scale: 0 },
+    // CePune - Heart visible and prominent
+    { position: [0, 0, 0], scale: 0 },
+    // Presiune - Heart center stage
+    { position: [0, 0, 0], scale: 1 },
+    // Probleme - Heart fading away
+    { position: [0, 0, 0], scale: 0 }
+  ]
+  
+  useFrame(() => {
+    if (!scroll || !armRef.current || typeof scroll.offset !== 'number') {
+      return
+    }
+    
+    try {
+      const offset = Math.max(0, Math.min(1, scroll.offset))
+      
+      // Calculate which section we're in
+      const sectionCount = armPositions.length
+      const sectionProgress = offset * (sectionCount - 1)
+      const currentSection = Math.floor(sectionProgress)
+      const nextSection = Math.min(currentSection + 1, sectionCount - 1)
+      const lerpFactor = Math.max(0, Math.min(1, sectionProgress - currentSection))
+      
+      // Ensure valid indices
+      if (currentSection < 0 || currentSection >= sectionCount || 
+          nextSection < 0 || nextSection >= sectionCount) {
+        return
+      }
+      
+      const current = armPositions[currentSection]
+      const next = armPositions[nextSection]
+      
+      if (!current || !next) return
+      
+      // Smooth interpolation
+      const smoothstep = (t) => t * t * (3 - 2 * t)
+      const smoothLerpFactor = smoothstep(lerpFactor)
+      
+      // Lerp position
+      const lerpedPosition = [
+        current.position[0] + (next.position[0] - current.position[0]) * smoothLerpFactor,
+        current.position[1] + (next.position[1] - current.position[1]) * smoothLerpFactor,
+        current.position[2] + (next.position[2] - current.position[2]) * smoothLerpFactor
+      ]
+      
+      // Lerp scale
+      const lerpedScale = current.scale + (next.scale - current.scale) * smoothLerpFactor
+      
+      // Apply to heart
+      armRef.current.position.set(...lerpedPosition)
+      armRef.current.scale.setScalar(lerpedScale)
+      
+    } catch (error) {
+      console.warn('ArmRig update error:', error)
+    }
+  })
+  
+  return (
+    <group ref={armRef}>
+      <MODEL_Arm position={[0, -0.1, 0]} rotation={[0, Math.PI / 2, 0]} scale={.9} animationTime={animationTime}/>
+    </group>
+  )
+}
+
+
+function Skybox() {
+  const { scene } = useThree()
+    const sphereRef = useRef()
+    
+    useFrame(() => {
+      if (sphereRef.current) {
+        sphereRef.current.rotation.y += 0.01
+      }
+    })
+
+    // Create gradient material
+    const gradientMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        color1: { value: new THREE.Color(0x0066ff) },
+        color2: { value: new THREE.Color(0xff6600) }
+      },
+      side: THREE.BackSide,
+      vertexShader: `
+        varying vec3 vPosition;
+        void main() {
+          vPosition = position;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 color1;
+        uniform vec3 color2;
+        varying vec3 vPosition;
+        void main() {
+          float mixValue = (vPosition.y + 1.0) / 2.0;
+          gl_FragColor = vec4(mix(color1, color2, mixValue), 1.0);
+        }
+      `
+    })
+
+    return (
+      <mesh ref={sphereRef} position={[0, 0, 0]} scale={100}>
+        <sphereGeometry args={[1, 32, 32]} />
+        <primitive object={gradientMaterial} attach="material" />
+      </mesh>
+    )
+}
+
+function Scene({ animationsSpeed, heartBpm, animationTime, debugMode, debugCamera, setCurrentSection }) {
   // Calculate combined animation speed: base speed * BPM multiplier
   // Normal BPM (72) = 1.0x multiplier, other BPMs scale proportionally
   const bpmMultiplier = heartBpm / 72 * 2;
@@ -289,15 +412,19 @@ function Scene({ animationsSpeed, heartBpm, debugMode, debugCamera, setCurrentSe
 
       <group rotation={[0, -45, 0]} position={[0, -.1, 0]}>
         <MODEL_Sange position={[0, 0, 0]} rotation={[0, Math.PI / 2, 0]} scale={.9} animationSpeed={combinedAnimationSpeed} />
+        <ArmRig animationTime={animationTime} />
       </group>
 
       <group position={[-2.5, 1, 2]} scale={1.5} rotation={[0, 0, 0]}>
         <HeartRig animationsSpeed={animationsSpeed} heartBpm={heartBpm} />
       </group>
 
-      <gridHelper args={[25, 25]} material-transparent={true} material-opacity={0.2} />
+
+      <gridHelper args={[25, 25]} material-transparent={true} material-opacity={0.01} />
 
       <OrbitControls enablePan={false} enableZoom={false} enableRotate={true} />
+
+      <Skybox />
       
       {/* FPS Stats */}
       <Stats />
@@ -387,7 +514,7 @@ function Necesara({ animationsSpeed, setAnimationsSpeed }){
   )
 }
 
-function CePune({ setHeartBpm }){
+function CePune({ setHeartBpm, setAnimationTime, animationTime }){
    const bpms = {
     72: 'Normal', 
     100: 'Light exercise',
@@ -419,19 +546,6 @@ function CePune({ setHeartBpm }){
           <li>Inima creează presiune.</li>
         </ul>
 
-        <ul>
-          <h3>💪 Limfa:</h3>
-          <li>Nu are pompă proprie.</li>
-          <li>Este pusă în mișcare de:</li>
-          <li>contracțiile mușchilor</li>
-          <li>respirație</li>
-          <li>valvele vaselor limfatice</li>
-        </ul>
-      </article>
-      👉 Apasă pe inimă → vezi pulsul și debitul.
-      👉 Activează mușchii → vezi limfa cum începe să circule.
-
-      <div style={{ margin: '20px 0' }}>
         <h3>Bătăi Pe Minut: {currentBpm}bpm - {currentDescription}</h3>
         <input 
           type="range" 
@@ -440,10 +554,31 @@ function CePune({ setHeartBpm }){
           max={bpmValues.length - 1} 
           step="1" 
           value={selectedBpmIndex}
-          style={{ margin: '0 10px' }}
+          style={{ marginBottom: '10px' }}
           onChange={(e) => handleBpmChange(parseInt(e.target.value))}
         />
-      </div>
+      </article>
+
+      <article>
+        <ul>
+          <h3>💪 Limfa este pusa in miscare de</h3>
+          <li>contracțiile mușchilor</li>
+          <li>respirație</li>
+          <li>valvele vaselor limfatice</li>
+        </ul>
+
+        <h3>Controlează mișcarea musculară:</h3>
+        <input 
+          type="range" 
+          min="0" 
+          max="2" // Animation duration in seconds
+          step="0.01"
+          value={animationTime || 0}
+          onChange={(e) => setAnimationTime(parseFloat(e.target.value))}
+        />
+      </article>
+      {/* 👉 Apasă pe inimă → vezi pulsul și debitul.
+      👉 Activează mușchii → vezi limfa cum începe să circule. */}
     </figure>
   )
 }

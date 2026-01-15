@@ -8,7 +8,7 @@ li { margin-left: 20px; }
 /* #endregion */
 
 /* #region Layout Base */
-figure { width: 100%; background-color: rgba(255, 0, 0, 0); min-height: 100vh; border-bottom: 1px solid rgb(255, 255, 255); padding: 1rem;}
+figure { width: 100%; background-color: rgba(255, 0, 0, 0); min-height: 100vh; border-bottom: 1px solid rgba(255, 255, 255, 0); padding: 2rem;}
 /* #endregion */
 
 /* #region Hero Section */
@@ -82,13 +82,12 @@ button:hover{
 
 /* #region CePune Section */
 .cepune {
-  color: white; min-height: 100vh;
-  display: flex; flex-direction: column; justify-content: flex-start;
-  scroll-snap-align: start;
+  color: white; min-height: 200vh; display: flex; flex-direction: column;
+  gap: 20px;
 }
 .cepune header {
   background-color: rgba(255, 0, 0, 0); width: 100%; text-align: center;
-  padding: 20px 0; margin-bottom: auto;
+  padding: 20px 0; margin-bottom: auto; position: absolute;
 }
 .cepune header h2 { text-align: left; }
 .cepune header p { text-align: left; margin-left: 5px; }
@@ -96,26 +95,26 @@ button:hover{
 /* #endregion */
 
 .cepune article {
-  width: 100%;
-  background-color: rgba(147, 178, 34, 0);
-  display: flex;
-  justify-content: space-between;
-  align-self: center;
-  margin-top: auto;
-  margin-bottom: auto;
-  transform: translateY(-50%);
-}
-
-.cepune div {
-  width: 100%;
-  background-color: rgba(200, 255, 0, 0);
   display: flex;
   flex-direction: column;
-  margin-top: auto;
-  text-align: center;
-  padding: 20px 0px;
+  background-color: rgba(255, 0, 0, 0);
+  min-height: 85vh;
 }
 
+.cepune article:nth-child(2) {
+  margin-top: 100px;
+}
+
+.cepune article:nth-child(3) {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cepune article h3 {
+  margin-top: auto;
+}
 
 .presiune {
   color: white; min-height: 100vh; width: 100%;

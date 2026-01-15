@@ -6,7 +6,7 @@ function SolidColorMaterial(color) {
   return new THREE.MeshBasicMaterial({ color: color, side: THREE.FrontSide })
 } 
 
-export function MODEL_Sange(props) {
+export function MODEL_Sange(props, showVeins = true, showLimfa = true) {
   const { animationSpeed = 1 } = props
   const { nodes, materials, animations } = useGLTF('./models/sangelesilimfa.glb')
   const group = React.useRef()
@@ -36,6 +36,7 @@ export function MODEL_Sange(props) {
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
+        {showVeins && (
         <group name="BloodStream">
           <mesh name="BézierCurve007" geometry={nodes.BézierCurve007.geometry} material={materials.Blue} position={[0, 0, .1]}/>
           <mesh name="BézierCurve007_1" geometry={nodes.BézierCurve007_1.geometry} material={SolidColorMaterial('#0e005a')} position={[0, 0, .1]} />
@@ -310,7 +311,9 @@ export function MODEL_Sange(props) {
           <mesh name="particle336" geometry={nodes.particle336.geometry} material={materials.Red} position={[-2.166, -0.595, 0.172]} rotation={[2.34, -1.145, 2.464]} scale={0.001} />
           <mesh name="particle337" geometry={nodes.particle337.geometry} material={materials.Red} position={[-2.078, -0.52, 0.057]} rotation={[-0.041, -0.34, -0.01]} scale={0.001} />
         </group>
+        )}
 
+        {showLimfa && (
         <group name="Lymphatic System">
           <group name="Limfa">
             <mesh name="BézierCurve016" geometry={nodes.BézierCurve016.geometry} material={materials.M2} />
@@ -387,8 +390,10 @@ export function MODEL_Sange(props) {
         <mesh name="particle200" geometry={nodes.particle200.geometry} material={materials.M2} position={[-2.577, 0.882, 0.018]} rotation={[0, -Math.PI / 8, 0]} scale={0.001} />
         <mesh name="particle201" geometry={nodes.particle201.geometry} material={materials.M2} position={[-2.609, 0.837, 0.007]} rotation={[-Math.PI, Math.PI / 8, 1.909]} scale={0.001} />
         </group>
-
+        )}
+        {showVeins && (
         <mesh name="Connecting_Veins" geometry={nodes.Connecting_Veins.geometry} material={materials.Gradient} />
+        )}
       </group>
     </group>
   )
