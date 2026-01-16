@@ -4,24 +4,26 @@ import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { Box, OrbitControls, ScrollControls, Scroll, useScroll, Stats, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import MODEL_Muscles from '../../components/m_muscles';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { EffectComposer, Bloom, ChromaticAberration, Vignette } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
 
 const cameraStates = [
-  { position: [0, 2, 10], lookAt: [0, 0, 0], fov: 50 },
-  { position: [1, 1, 6], lookAt: [.2, 0, 0], fov: 35 },
+  { position: [-3, 0, 6], lookAt: [0, 1, 0], fov: 35 },
+  { position: [0, 0, 5], lookAt: [.15, .3, 0], fov: 35 },
+  { position: [-5, 7, 4], lookAt: [-3, 0, 0], fov: 45 },
+  { position: [-3, -2, 6], lookAt: [-2, 0, 0], fov: 60 },
+  { position: [-12, 9, 6], lookAt: [-3, 2, 0], fov: 30 },
   { position: [-3, 1, 6], lookAt: [-2, 0, 0], fov: 60 },
-  { position: [-3, 1, 6], lookAt: [-2, 0, 0], fov: 60 },
-  { position: [-3, 1, 6], lookAt: [-2, 0, 0], fov: 60 },
-    { position: [-3, 1, 6], lookAt: [-2, 0, 0], fov: 60 },
+  { position: [-3, 3, 7], lookAt: [0, 1, 0], fov: 40 },
 ];
 
 function CameraController() {
   const { camera } = useThree();
   const scroll = useScroll();
+  const timeRef = useRef(0);
 
-  useFrame(() => {
+  useFrame((state, delta) => {
     const pages = cameraStates.length - 1;
     const scrollPos = scroll.offset * pages;
     let page = Math.floor(scrollPos);
@@ -35,7 +37,14 @@ function CameraController() {
     // Lerp position
     const posA = new THREE.Vector3(...cameraStates[page].position);
     const posB = new THREE.Vector3(...cameraStates[nextPage].position);
-    camera.position.lerpVectors(posA, posB, t);
+    const basePos = new THREE.Vector3().lerpVectors(posA, posB, t);
+
+    // Oscillate X position (panning)
+    timeRef.current += delta;
+    const PAN_AMPLITUDE = 0.5; // max pan distance
+    const PAN_SPEED = 0.5; // lower is slower
+    const panOffset = Math.sin(timeRef.current * PAN_SPEED) * PAN_AMPLITUDE;
+    camera.position.set(basePos.x + panOffset, basePos.y, basePos.z);
 
     // Lerp lookAt
     const lookA = new THREE.Vector3(...cameraStates[page].lookAt);
@@ -112,11 +121,11 @@ function Skybox() {
     )
 }
 
-function Scene({ currentPage }) {
+function Scene({ currentPage, selectedArmType, sendImpulse, elapsedTime }) {
   return (
     <>
       <CameraController />
-      <ambientLight intensity={0.3} />
+      <ambientLight intensity={1} />
       <directionalLight
         position={[-5, 10, 5]}
         intensity={1.2}
@@ -125,25 +134,30 @@ function Scene({ currentPage }) {
         shadow-mapSize-height={1024}
       />
       <pointLight position={[10, 10, 10]} intensity={0.5} />
-      <MuscleModelRig currentPage={currentPage} />
-      {/* <gridHelper args={[10, 10]} /> */}
+      <MuscleModelRig currentPage={currentPage} selectedArmType={selectedArmType} 
+      sendImpulse={sendImpulse} elapsedTime={elapsedTime}
+      />
       <PostProcessing enabled={true} />
       <Skybox />
     </>
   );
 }
 
-function MuscleModelRig({ currentPage }) {
+function MuscleModelRig({ currentPage, selectedArmType, sendImpulse, elapsedTime }) {
   // You can use currentPage here to control animation, visibility, etc.
   return (
     <group>
-      <MODEL_Muscles position={[0, 0, 0]} scale={[0.5, 0.5, 0.5]} currentPage={currentPage} />
+      <MODEL_Muscles position={[0, 0, 0]} scale={[0.5, 0.5, 0.5]}
+       currentPage={currentPage} selectedArmType={selectedArmType} sendImpulse={sendImpulse} elapsedTime={elapsedTime} />
     </group>
   );
 }
 
 function Muschi() {
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedArmType, setSelectedArmType] = useState(1);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const sendImpulse = useRef(() => {console.log('Impulse sent')});
   const scrollRef = useRef();
 
   // Custom hook to track scroll page
@@ -168,14 +182,15 @@ function Muschi() {
       <Canvas style={{ height: '100vh' }} camera={{ position: [0, 2, 5], fov: 40 }}>
         <ScrollControls pages={cameraStates.length} damping={0.1}>
           <PageTracker />
-          <Scene currentPage={currentPage} />
+          <Scene currentPage={currentPage} selectedArmType={selectedArmType} sendImpulse={sendImpulse} elapsedTime={elapsedTime}
+                 />
           <Scroll html style={{ width: '100%' }}>
             <Hero />
             <CeEste />
             <CeEsteContractia />
-            <Structura />
-            <CumApare />
-            <Forta />
+            <Structura selectedArmType={selectedArmType} setSelectedArmType={setSelectedArmType} />
+            <CumApare sendImpulse={() => sendImpulse.current()} />
+            <Forta setElapsedTime={setElapsedTime} />
           </Scroll>
         </ScrollControls>
       </Canvas>
@@ -191,7 +206,9 @@ function Hero() {
   );
 }
 
-function CeEste() {
+function CeEste({focusedGroup, setFocusedGroup}) {
+  useEffect(() => { console.log("Selected muscle type:", focusedGroup); }, [focusedGroup]);
+
   return (
     <figure id='ceeste_muschi'>
       <h1>1️⃣ Ce este mușchiul și ce face?</h1>
@@ -201,17 +218,24 @@ function CeEste() {
           <li>produce forță</li>
           <li>produce mișcare</li>
           <li>menține postura</li>
-          👉 Accentul prezentării: mușchii scheletici.
         </ul>
 
         <ul>
           <h3>Tipuri de mușchi:</h3>
-          <li>🟥 scheletici (voluntari)</li>
-          <li>🫀 cardiac</li>
-          <li>🟨 netezi (organe interne)</li>
-          👉 Click pe corp → apar mușchii activi.
+          <li>scheletici</li>
+          <li>cardiac</li>
+          <li>netezi</li>
         </ul>
       </article>
+
+      <section className='muschi_panel' id='muschi_panel_visible'>
+        <h1>retet</h1>
+        <p>
+          rererererrr
+        </p>
+        <button onClick={() => {}}>Scheletici</button>
+          
+      </section>
     </figure>
   );
 }
@@ -232,7 +256,7 @@ function CeEsteContractia() {
   );
 }
 
-function Structura(){
+function Structura({ selectedArmType, setSelectedArmType }){
     return (
     <figure id='structura_muschiului'>
       <h1>3️⃣ Tipuri de contracție musculară</h1>
@@ -242,28 +266,31 @@ function Structura(){
           <h3>Contracție izotonică</h3>
           <li>Mușchiul se scurtează</li>
           <li>Produce mișcare</li>
-          👉 Exemplu: ridicarea unei greutăți
+          <li><button onClick={() => setSelectedArmType(1)} 
+          id={selectedArmType === 1 ? "struct_btn_selected" : ""}>Vizualizare</button></li>
         </ul>
 
         <ul>
           <h3>Contracție izometrică</h3>
           <li>Mușchiul nu se scurtează</li>
           <li>Produce forță fără mișcare</li>
-          👉 Exemplu: menținerea unei poziții
+          <li><button onClick={() => setSelectedArmType(2)}
+            id={selectedArmType === 2 ? "struct_btn_selected" : ""}>Vizualizare</button></li>
         </ul>
 
         <ul>
           <h3>Contracție excentrică</h3>
           <li>Mușchiul se alungește sub tensiune</li>
           <li>Exemplu: coborârea unei greutăți</li>
-          👉 Alegi tipul → vezi animația specifică.
+          <li><button onClick={() => setSelectedArmType(3)}
+            id={selectedArmType === 3 ? "struct_btn_selected" : ""}>Vizualizare</button></li>
         </ul>
       </article>
     </figure>
   );
 }
 
-function CumApare(){
+function CumApare({sendImpulse}){
     return (
       <figure id='cumapare'>
         <h1>4️⃣ Cum apare contracția?</h1>
@@ -274,28 +301,35 @@ function CumApare(){
           <li>Nervul ajunge la mușchi</li>
           <li><div className='li_w_span'> Se eliberează <span>Ca²⁺</span> </div></li>
           <li>Are loc alunecarea filamentelor</li>
-          👉 Buton „Trimite impuls” → contracția pornește.
+          <li><button onClick={() => {sendImpulse()}}>Trimite impuls</button></li>
         </ol>
       </figure>
     );
 }
 
-function Forta(){
+function Forta({setElapsedTime}){
     return (
-    <figure id='cumapare'>
+    <figure id='forta_musculara'>
       <h1>5️⃣ Forța musculară</h1>
 
       <ul>
         <h3>Ce determină forța:</h3>
         <li>dimensiunea mușchiului</li>
         <li>numărul fibrelor activate</li>
-        <li>tipul contracției</li>
         <li>nivelul de antrenament</li>
-        👉 Slider pentru „număr de fibre active”.
+        <h3>Număr de fibre active</h3>
+        <input
+          id="fibersSlider"
+          type="range"
+          min={5}
+          max={100}
+          defaultValue={5}
+          onChange={e => {setElapsedTime(e.target.value)
+          }}
+        />
       </ul>
     </figure>
   );
 }
-
 
 export default Muschi;

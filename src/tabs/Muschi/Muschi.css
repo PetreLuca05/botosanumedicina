@@ -32,3 +32,114 @@
   aspect-ratio: 1/1;
   font-weight: bold;
 }
+
+#ceeste_muschi{
+  display: flex;
+  flex-direction: column;
+}
+
+.muschi_panel {
+  background-color: rgba(0, 0, 0, 0.1);
+  width: 40%;
+  margin-left: auto;
+  padding: 10px 20px;
+  border-radius: 20px;
+  margin-top: 20px;
+  min-height: 35vh;
+  display: none;
+}
+
+#muschi_panel_visible {
+  display: block;
+}
+
+#structura_muschiului article {
+  flex-direction: column;
+  gap: 55px;
+  max-width: 30%;
+}
+
+#structura_muschiului ul li:nth-child(4) {
+  list-style: none;
+  margin-left: 0px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+#structura_muschiului button {
+  padding: 8px 16px;
+  background-color: rgba(76, 76, 255, 0);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(6px); color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+#structura_muschiului #struct_btn_selected {
+  background-color: rgba(76, 76, 255, 1);
+  border: 1px solid rgba(255, 255, 255, 0);
+}
+
+#structura_muschiului button:hover {
+  background-color: rgba(76, 76, 255, 1);
+  border: 1px solid rgba(255, 255, 255, 0);
+}
+
+#structura_muschiului button:active {
+  transform: scale(0.9);
+  box-shadow: 0 0 8px rgba(76, 76, 255, 0.4);
+}
+
+
+#cumapare ol {
+  max-width: 30%;
+}
+
+#cumapare ol li:nth-child(6) {
+  list-style: none;
+  margin-left: 0px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+#cumapare button {
+  padding: 8px 16px;
+  background-color: rgba(76, 76, 255, 0);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(6px); color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+#cumapare #struct_btn_selected {
+  background-color: rgba(76, 76, 255, 1);
+  border: 1px solid rgba(255, 255, 255, 0);
+}
+
+#cumapare button:hover {
+  background-color: rgba(76, 76, 255, 1);
+  border: 1px solid rgba(255, 255, 255, 0);
+}
+
+#cumapare button:active {
+  transform: scale(0.9);
+  box-shadow: 0 0 8px rgba(76, 76, 255, 0.4);
+}
+
+#forta_musculara ul{
+  max-width: 40%;
+}
+
+#forta_musculara h3:nth-child(5) {
+  margin-top: 10px;
+}
+
+#forta_musculara input {
+  width: 100%;
+}
